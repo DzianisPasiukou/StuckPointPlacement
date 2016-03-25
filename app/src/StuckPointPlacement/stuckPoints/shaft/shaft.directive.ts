@@ -12,7 +12,7 @@ export class Shaft {
 
     public constructor() { }
 
-    public link(scope: ng.IScope, element: JQuery, attrs: ng.IAttributes) {
+    public link(scope: ng.IScope, element: JQuery, attrs: ng.IAttributes, ctrl: any) {
     }
 
     public static create() {

@@ -22,14 +22,18 @@ export class StuckPointsController implements IStuckPointsController {
     */
     public stuckEntity: any;
 
+    public shaft: any;
+
     public isLocked: boolean = false;
     public isShowBin: boolean = true;
 
-    //temporary mock tjFeedbackBoxService
-    public tjFeedbackBoxService: any;
-
     public constructor() {
-        this.tjFeedbackBoxService = {};
+        this.shaft = {
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 100
+        };
     }
 
     /**

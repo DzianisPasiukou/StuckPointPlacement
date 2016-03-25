@@ -1,4 +1,4 @@
-<div class="stuck-point-placement" ng-init="$ctrl.onChanged($event, $ctrl.stuckEntity)">
+<div class="stuck-point-placement">
     <div jar-preloader ng-show="$ctrl.isLocked">
         Preloading...
     </div>
@@ -7,7 +7,9 @@
 
     <svg>
         <rect class="field"></rect>
-        <jar-shaft></jar-shaft>
+        
+        <g jar-shaft shaft="$ctrl.shaft"></g>
+        
         <line class="legend-point-initial"></line>
         <text class="legend-point-initial-label"></text>
         <line class="legend-point-finish"></line>
