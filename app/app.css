@@ -1,7 +1,7 @@
 .shaft {
   fill: #aaaaaa;
 }
-.stuck-point-placement {
+.stuck-points {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -10,7 +10,7 @@
   height: 100%;
   text-align: center;
 }
-.stuck-point-placement .delete-button {
+.stuck-points .delete-button {
   cursor: pointer;
   position: absolute;
   top: 10px;
@@ -18,12 +18,25 @@
   width: 13px;
   height: 14px;
 }
-.stuck-point-placement .container {
+.stuck-points .container {
   position: relative;
   z-index: 100;
 }
-.stuck-point-placement .wrapper-builder {
+.stuck-points .wrapper-builder {
   margin: 10px;
+}
+.stuck-point-placement {
+  max-width: 260px;
+}
+body {
+  margin: 20px;
+}
+.st-builder {
+  width: 260px;
+  margin: 0 10px 0 0;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e0e0df;
 }
 
 /*# sourceMappingURL=app.css.map*/

@@ -11,6 +11,8 @@ interface IStuckPointsController {
     isLocked: boolean;
     isShowBin: boolean;
 
+    compression: any;
+
     onRemove($event: ng.IAngularEvent): void;
 }
 
@@ -27,13 +29,16 @@ export class StuckPointsController implements IStuckPointsController {
     public isLocked: boolean = false;
     public isShowBin: boolean = true;
 
+    public compression: any;
+
+    private sizes: any = {
+        width: 180,
+        height: 780
+    }
+
     public constructor() {
-        this.shaft = {
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100
-        };
+        this.initShaft();
+        this.initCompression();
     }
 
     /**
@@ -52,7 +57,25 @@ call callback from parent...`);
         });
     }
 
+    public onPointChanged(event: { $event: ng.IAngularEvent, point: any }): void {
+        console.log(`point changed...`);
+    }
+
     public onRemove($event: ng.IAngularEvent): void {
         console.log('removed ' + $event);
+    }
+
+    private initShaft(): void {
+        this.shaft = {
+            parentWidth: this.sizes.width,
+            parentHeight: this.sizes.height
+        };
+    }
+
+    private initCompression(): void {
+        this.compression = {
+            width: this.sizes.width,
+            height: this.sizes.height
+        }
     }
 }

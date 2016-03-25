@@ -11,9 +11,17 @@ export class StuckPoints {
 
     public templateUrl: string = 'src/StuckPointPlacement/stuckPoints/stuckPoints.html';
 
-    public constructor() { }
+    public link: ng.IDirectiveLinkFn;
 
-    public link(scope: ng.IScope, element: JQuery, attrs: ng.IAttributes) {
+    public constructor() {
+        this.link = (scope: ng.IScope, element: JQuery, attrs: ng.IAttributes, ctrl: any) => this.linkFn(scope, element, attrs, ctrl);
+    }
+
+    private linkFn(scope: ng.IScope, element: JQuery, attrs: ng.IAttributes, ctrl: any) {
+        this.init(ctrl);
+    }
+
+    private init(ctrl): void {
     }
 
     public static create() {

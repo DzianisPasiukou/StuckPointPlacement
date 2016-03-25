@@ -256,6 +256,16 @@
 	var PointInstanceController = (function () {
 	    function PointInstanceController() {
 	    }
+	    /**
+	     * bind to controller
+	     */
+	    PointInstanceController.prototype.onPointChanged = function (event) { };
+	    PointInstanceController.prototype.onChanged = function ($event, point) {
+	        this.onPointChanged({
+	            $event: $event,
+	            point: point
+	        });
+	    };
 	    PointInstanceController.$inject = [];
 	    return PointInstanceController;
 	}());
@@ -283,6 +293,7 @@
 	"use strict";
 	var Shaft = (function () {
 	    function Shaft() {
+	        var _this = this;
 	        this.restrict = 'AE';
 	        this.scope = {
 	            shaft: '='
@@ -291,8 +302,25 @@
 	        this.controllerAs = '$ctrl';
 	        this.bindToController = true;
 	        this.templateUrl = 'src/StuckPointPlacement/stuckPoints/shaft/shaft.html';
+	        this.config = {
+	            width: 2,
+	            verticalMargin: 20
+	        };
+	        this.link = function (scope, element, attrs, ctrl) { return _this.linkFn(scope, element, attrs, ctrl); };
 	    }
-	    Shaft.prototype.link = function (scope, element, attrs, ctrl) {
+	    Shaft.prototype.linkFn = function (scope, element, attrs, ctrl) {
+	        this.init(ctrl);
+	    };
+	    Shaft.prototype.init = function (ctrl) {
+	        ctrl.compression = {
+	            width: this.config.width,
+	            height: this.calculateHeight(ctrl),
+	            x: ctrl.shaft.parentWidth / 2,
+	            y: this.config.verticalMargin
+	        };
+	    };
+	    Shaft.prototype.calculateHeight = function (ctrl) {
+	        return ctrl.shaft.parentHeight - this.config.verticalMargin * 2;
 	    };
 	    Shaft.create = function () {
 	        var directive = function () { return new Shaft(); };
@@ -311,14 +339,7 @@
 	"use strict";
 	var ShaftController = (function () {
 	    function ShaftController() {
-	        this.config = {
-	            width: 3,
-	            verticalMargin: 20
-	        };
-	        this.init();
 	    }
-	    ShaftController.prototype.init = function () {
-	    };
 	    ShaftController.$inject = [];
 	    return ShaftController;
 	}());
@@ -332,6 +353,7 @@
 	"use strict";
 	var StuckPoints = (function () {
 	    function StuckPoints() {
+	        var _this = this;
 	        this.restrict = 'AE';
 	        this.scope = {
 	            stuckEntity: '=',
@@ -341,8 +363,12 @@
 	        this.controllerAs = '$ctrl';
 	        this.bindToController = true;
 	        this.templateUrl = 'src/StuckPointPlacement/stuckPoints/stuckPoints.html';
+	        this.link = function (scope, element, attrs, ctrl) { return _this.linkFn(scope, element, attrs, ctrl); };
 	    }
-	    StuckPoints.prototype.link = function (scope, element, attrs) {
+	    StuckPoints.prototype.linkFn = function (scope, element, attrs, ctrl) {
+	        this.init(ctrl);
+	    };
+	    StuckPoints.prototype.init = function (ctrl) {
 	    };
 	    StuckPoints.create = function () {
 	        var directive = function () { return new StuckPoints(); };
@@ -363,12 +389,12 @@
 	    function StuckPointsController() {
 	        this.isLocked = false;
 	        this.isShowBin = true;
-	        this.shaft = {
-	            x: 100,
-	            y: 100,
-	            width: 100,
-	            height: 100
+	        this.sizes = {
+	            width: 180,
+	            height: 780
 	        };
+	        this.initShaft();
+	        this.initCompression();
 	    }
 	    /**
 	     bind to controller
@@ -382,8 +408,23 @@
 	            stuckEntity: stuckEntity
 	        });
 	    };
+	    StuckPointsController.prototype.onPointChanged = function (event) {
+	        console.log("point changed...");
+	    };
 	    StuckPointsController.prototype.onRemove = function ($event) {
 	        console.log('removed ' + $event);
+	    };
+	    StuckPointsController.prototype.initShaft = function () {
+	        this.shaft = {
+	            parentWidth: this.sizes.width,
+	            parentHeight: this.sizes.height
+	        };
+	    };
+	    StuckPointsController.prototype.initCompression = function () {
+	        this.compression = {
+	            width: this.sizes.width,
+	            height: this.sizes.height
+	        };
 	    };
 	    StuckPointsController.$inject = [];
 	    return StuckPointsController;
@@ -406,6 +447,7 @@
 	        this.controller = 'StuckPointPlacementController';
 	        this.controllerAs = '$ctrl';
 	        this.bindToController = true;
+	        this.replace = true;
 	        this.templateUrl = 'src/StuckPointPlacement/stuckPointPlacement.html';
 	    }
 	    StuckPointPlacement.prototype.link = function (scope, element, attrs) {

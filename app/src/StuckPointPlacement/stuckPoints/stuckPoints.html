@@ -1,11 +1,11 @@
-<div class="stuck-point-placement">
+<div class="stuck-points">
     <div jar-preloader ng-show="$ctrl.isLocked">
         Preloading...
     </div>
 
     <img class="delete-button" ng-show="$ctrl.isShowBin" ng-click="$ctrl.onRemove($event)" src="assets/img/close1.png" />
 
-    <svg>
+    <svg ng-style="$ctrl.compression">
         <rect class="field"></rect>
         
         <g jar-shaft shaft="$ctrl.shaft"></g>
@@ -14,5 +14,7 @@
         <text class="legend-point-initial-label"></text>
         <line class="legend-point-finish"></line>
         <text class="legend-point-finish-label"></text>
+        
+        <g jar-point-instance point="point" on-point-changed="$ctrl.onPointChanged($event, point)" ng-repeat="point in $ctrl.stuckEntity.points"></g>
     </svg>
 </div>

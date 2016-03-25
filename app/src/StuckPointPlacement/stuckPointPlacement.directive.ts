@@ -9,6 +9,8 @@ export class StuckPointPlacement implements ng.IDirective {
     public controllerAs: string = '$ctrl';
     public bindToController: boolean = true;
 
+    public replace: boolean = true;
+
     public templateUrl: string = 'src/StuckPointPlacement/stuckPointPlacement.html';
 
     public constructor() {
