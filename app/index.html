@@ -6,7 +6,9 @@
 <!--[if IE 8]>
 <html lang="en" ng-app="myApp" class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html lang="en" ng-app="myApp" class="no-js"> <!--<![endif]-->
+<html lang="en" ng-app="myApp" class="no-js">
+<!--<![endif]-->
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,14 +18,20 @@
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
     <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
     <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+
+    <link rel="stylesheet" href="./app.css">
 </head>
-<body>
-<stuck-point-placement></stuck-point-placement>
 
-<script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/angular-route/angular-route.js"></script>
+<body ng-controller="AppController as $ctrl">
+    <jar-stuck-point-placement points-entity="$ctrl.pointsEntity" points-entity-emitter="$ctrl.pointsEntityEmitter"></jar-stuck-point-placement>
 
-<script src="bundle.js"></script>
+    <script src="./bower_components/rxjs/dist/rx.all.min.js"></script>
+
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+
+    <script src="bundle.js"></script>
 
 </body>
+
 </html>

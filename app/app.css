@@ -1,0 +1,29 @@
+.shaft {
+  fill: '#aaaaaa';
+}
+.stuck-point-placement {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+.stuck-point-placement .delete-button {
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 13px;
+  height: 14px;
+}
+.stuck-point-placement .container {
+  position: relative;
+  z-index: 100;
+}
+.stuck-point-placement .wrapper-builder {
+  margin: 10px;
+}
+
+/*# sourceMappingURL=app.css.map*/
