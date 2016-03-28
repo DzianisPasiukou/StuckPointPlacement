@@ -5,7 +5,7 @@
 
     <img class="delete-button" ng-show="$ctrl.isShowBin" ng-click="$ctrl.onRemove($event)" src="assets/img/close1.png" />
 
-    <svg ng-style="$ctrl.compression">
+    <svg ng-style="$ctrl.compression" ng-mouseup="$ctrl.onMouseUp($event)" ng-mousedown="$ctrl.onMouseDown($event)">
         <rect class="field"></rect>
         
         <g jar-shaft shaft="$ctrl.shaft"></g>

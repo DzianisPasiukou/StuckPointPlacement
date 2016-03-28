@@ -16,7 +16,6 @@ export class StuckPointsController {
     public onPointChanged: EventEmitter<any>;
 
     public shaft: any;
-    public stuckEntityConfig: any;
     public isLocked: boolean = false;
     public isShowBin: boolean = true;
     public compression: any;
@@ -44,6 +43,17 @@ export class StuckPointsController {
     public onRemove($event: ng.IAngularEvent): void {
     }
 
+    public onMouseDown($event: MouseEvent): void {
+        console.log('mouse down -> ' + $event);
+
+        let value = this.valueByPoint($event.clientY);
+        value = this.checkDepth(value);
+    }
+
+    public onMouseUp($event: MouseEvent): void {
+        console.log('mouse up -> ' + $event);
+    }
+
     private format() {
         this.pointsInstances = [];
 
@@ -63,6 +73,17 @@ export class StuckPointsController {
                 isSelected: true
             });
         });
+    }
+
+    private checkDepth(depth: number): depth {
+        if (depth < this.stuckEntity.minDepth) {
+            depth = this.stuckEntity.minDepth;
+        }
+        if (depth > this.stuckEntity.maxDepth) {
+            depth = this.stuckEntity.maxDepth;
+        }
+
+        return depth;
     }
 
     private pointLayer(): number {
@@ -90,21 +111,8 @@ export class StuckPointsController {
     }
 
     private init(): void {
-        this.initConfig();
         this.initShaft();
         this.initCompression();
-    }
-
-    private initConfig(): void {
-        this.stuckEntityConfig = {
-            parent: {
-                width: this.sizes.width,
-                height: this.sizes.height
-            },
-            point: {
-                radius: this.sizes.pointRadius
-            }
-        };
     }
 
     private initShaft(): void {
