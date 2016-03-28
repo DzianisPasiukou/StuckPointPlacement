@@ -7,6 +7,7 @@ export class Shaft {
     public bindToController:boolean = true;
 
     public templateUrl:string = 'src/StuckPointPlacement/stuckPoints/shaft/shaft.html';
+    public templateNamespace:string = 'svg';
 
     public link:ng.IDirectiveLinkFn;
 

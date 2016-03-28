@@ -22,7 +22,7 @@ export class AppController implements IApp {
             minDepth: 2550,
             points: [{
                 depth: 3291.89,
-                state: 0,
+                state: 1,
                 type: 'Differential',
                 uuid: 'dcfbbf45-cded-5003-26bc-85cbede299cd',
                 isValid: false,

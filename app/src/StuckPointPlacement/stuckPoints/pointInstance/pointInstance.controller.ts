@@ -9,6 +9,11 @@ export class PointInstanceController {
     public point:any;
 
     /**
+     * @input pointSubscriber - the any passed to us
+     */
+    public pointSubscriber:EventEmitter<any>;
+
+    /**
      * @output onPointChanged - outputs the stuck entity is changed
      */
     public onPointChanged:EventEmitter<any>;
@@ -20,6 +25,12 @@ export class PointInstanceController {
             this.onPointChanged = new EventEmitter<any>();
         }
 
+        if (!angular.isDefined(this.pointSubscriber)) {
+            this.pointSubscriber = new EventEmitter<any>();
+        }
+
+        this.pointSubscriber.subscribe((point) => this.init());
+
         this.init();
     }
 
@@ -27,8 +38,8 @@ export class PointInstanceController {
         this.onPointChanged.emit(point);
     }
 
-    public formatDepth(depth:number):string {
-        return depth.toString();
+    public formatDepth(depth:string):string {
+        return parseFloat(depth).toFixed(2);
     }
 
     private init() {
