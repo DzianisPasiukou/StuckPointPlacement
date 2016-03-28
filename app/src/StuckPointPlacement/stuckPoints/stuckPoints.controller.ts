@@ -52,17 +52,15 @@ export class StuckPointsController {
                 parent: {
                     height: this.sizes.height,
                     width: this.sizes.width
-                }
+                },
                 element: {
                     radius: this.sizes.pointRadius,
                     x: this.sizes.width / 2 + 1 + this.sizes.pointRadius * 2 * this.pointLayer() + (this.pointLayer() > 0 ? 6 : 0),
-                    y: this.pointByValue(point.depth),
-                    fill: 'white',
-                    stroke: 'grey',
-                    strokeWidth: 3,
-                    icon: 'assets/img/point-section-red-active.png'
+                    y: this.pointByValue(point.depth)
                 },
-                depth: point.depth
+                depth: point.depth,
+                state: point.state,
+                isSelected: true
             });
         });
     }

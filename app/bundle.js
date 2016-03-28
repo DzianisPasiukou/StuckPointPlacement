@@ -265,6 +265,21 @@
 	        return depth.toString();
 	    };
 	    PointInstanceController.prototype.init = function () {
+	        //temprorary mock
+	        var states = [
+	            {
+	                color: 'rgb(255,255,255)',
+	                border: 'rgb(170,170,170)',
+	                borderWidth: '3',
+	                icon: ''
+	            },
+	            {
+	                color: 'rgb(170,170,170)',
+	                border: '',
+	                borderWidth: '',
+	                icon: 'assets/img/point-section-grey-active.png'
+	            }
+	        ];
 	        this.compressions = {
 	            line: {
 	                x1: this.point.parent.width / 2,
@@ -277,19 +292,21 @@
 	                y: this.point.element.y
 	            },
 	            circle: {
-	                r: this.point.element.radius,
+	                r: this.point.element.radius * (this.isSelected ? 2 : 1),
 	                cx: this.point.element.x,
 	                cy: this.point.element.y,
-	                fill: this.point.element.fill,
-	                stroke: this.point.element.stroke,
-	                strokeWidth: this.point.element.strokeWidth
+	                fill: states[this.point.state].color,
+	                stroke: states[this.point.state].border,
+	                strokeWidth: states[this.point.state].borderWidth,
+	                isVisible: !this.isSelected || !states[this.point.state].icon
 	            },
 	            image: {
 	                x: this.point.parent.width / 2 - 11,
 	                y: this.point.element.y - 14,
 	                width: 25,
 	                height: 27,
-	                link: this.point.element.icon
+	                link: states[this.point.state].icon,
+	                isVisible: this.isSelected && states[this.point.state].icon
 	            }
 	        };
 	    };
@@ -446,13 +463,11 @@
 	                element: {
 	                    radius: _this.sizes.pointRadius,
 	                    x: _this.sizes.width / 2 + 1 + _this.sizes.pointRadius * 2 * _this.pointLayer() + (_this.pointLayer() > 0 ? 6 : 0),
-	                    y: _this.pointByValue(point.depth),
-	                    fill: 'white',
-	                    stroke: 'grey',
-	                    strokeWidth: 3,
-	                    icon: 'assets/img/point-section-red-active.png'
+	                    y: _this.pointByValue(point.depth)
 	                },
-	                depth: point.depth
+	                depth: point.depth,
+	                state: point.state,
+	                isSelected: true
 	            });
 	        });
 	    };
