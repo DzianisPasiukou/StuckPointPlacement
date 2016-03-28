@@ -1,7 +1,7 @@
 export class StuckPointPlacement implements ng.IDirective {
     public scope: any = {
-        pointsEntity: '=',
-        onPointsEntityChanged: '='
+        pointsEntity: '<',
+        onPointsEntityChanged: '<'
     };
     public controller: string = 'StuckPointPlacementController';
     public controllerAs: string = '$ctrl';

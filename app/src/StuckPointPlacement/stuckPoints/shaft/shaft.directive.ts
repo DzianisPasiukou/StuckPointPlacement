@@ -1,6 +1,6 @@
 export class Shaft {
     public scope: any = {
-        shaft: '='
+        shaft: '<'
     };
     public controller: string = 'ShaftController';
     public controllerAs: string = '$ctrl';
@@ -9,11 +9,6 @@ export class Shaft {
     public templateUrl: string = 'src/StuckPointPlacement/stuckPoints/shaft/shaft.html';
 
     public link: ng.IDirectiveLinkFn;
-
-    private config: any = {
-        width: 2,
-        verticalMargin: 20
-    };
 
     public constructor() {
         this.link = (scope: ng.IScope, element: JQuery, attrs: ng.IAttributes, ctrl: any) => this.linkFn(scope, element, attrs, ctrl);
@@ -25,15 +20,15 @@ export class Shaft {
 
     private init(ctrl): void {
         ctrl.compression = {
-            width: this.config.width,
+            width: ctrl.shaft.width,
             height: this.calculateHeight(ctrl),
             x: ctrl.shaft.parentWidth / 2,
-            y: this.config.verticalMargin
+            y: ctrl.shaft.verticalMargin
         }
     }
 
     private calculateHeight(ctrl) {
-        return ctrl.shaft.parentHeight - this.config.verticalMargin * 2;
+        return ctrl.shaft.parentHeight - ctrl.shaft.verticalMargin * 2;
     }
 
     public static create() {

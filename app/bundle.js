@@ -227,8 +227,8 @@
 	var PointInstance = (function () {
 	    function PointInstance() {
 	        this.scope = {
-	            point: '=',
-	            onPointChanged: '='
+	            point: '<',
+	            onPointChanged: '<'
 	        };
 	        this.controller = 'PointInstanceController';
 	        this.controllerAs = '$ctrl';
@@ -256,10 +256,50 @@
 	        if (!angular.isDefined(this.onPointChanged)) {
 	            this.onPointChanged = new EventEmitter_1.EventEmitter();
 	        }
+	        this.init();
 	    }
 	    PointInstanceController.prototype.onChanged = function ($event, point) {
 	        this.onPointChanged.emit(point);
 	    };
+	    PointInstanceController.prototype.formatDepth = function (depth) {
+	        return depth.toString();
+	    };
+	    PointInstanceController.prototype.init = function () {
+	        this.compressions = {
+	            line: {
+	                x1: this.point.parent.width / 2,
+	                x2: this.point.parent.width / 2 - 24,
+	                y1: this.point.element.y,
+	                y2: this.point.element.y
+	            },
+	            text: {
+	                x: this.point.parent.width / 2 - 28,
+	                y: this.point.element.y
+	            },
+	            circle: {
+	                r: this.point.element.radius,
+	                cx: this.point.element.x,
+	                cy: this.point.element.y,
+	                fill: this.point.element.fill,
+	                stroke: this.point.element.stroke,
+	                strokeWidth: this.point.element.strokeWidth
+	            },
+	            image: {
+	                x: this.point.parent.width / 2 - 11,
+	                y: this.point.element.y - 14,
+	                width: 25,
+	                height: 27,
+	                link: this.point.element.icon
+	            }
+	        };
+	    };
+	    Object.defineProperty(PointInstanceController.prototype, "isSelected", {
+	        get: function () {
+	            return this.point.isSelected;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    PointInstanceController.$inject = [];
 	    return PointInstanceController;
 	}());
@@ -289,16 +329,12 @@
 	    function Shaft() {
 	        var _this = this;
 	        this.scope = {
-	            shaft: '='
+	            shaft: '<'
 	        };
 	        this.controller = 'ShaftController';
 	        this.controllerAs = '$ctrl';
 	        this.bindToController = true;
 	        this.templateUrl = 'src/StuckPointPlacement/stuckPoints/shaft/shaft.html';
-	        this.config = {
-	            width: 2,
-	            verticalMargin: 20
-	        };
 	        this.link = function (scope, element, attrs, ctrl) { return _this.linkFn(scope, element, attrs, ctrl); };
 	    }
 	    Shaft.prototype.linkFn = function (scope, element, attrs, ctrl) {
@@ -306,14 +342,14 @@
 	    };
 	    Shaft.prototype.init = function (ctrl) {
 	        ctrl.compression = {
-	            width: this.config.width,
+	            width: ctrl.shaft.width,
 	            height: this.calculateHeight(ctrl),
 	            x: ctrl.shaft.parentWidth / 2,
-	            y: this.config.verticalMargin
+	            y: ctrl.shaft.verticalMargin
 	        };
 	    };
 	    Shaft.prototype.calculateHeight = function (ctrl) {
-	        return ctrl.shaft.parentHeight - this.config.verticalMargin * 2;
+	        return ctrl.shaft.parentHeight - ctrl.shaft.verticalMargin * 2;
 	    };
 	    Shaft.create = function () {
 	        var directive = function () { return new Shaft(); };
@@ -348,8 +384,8 @@
 	    function StuckPoints() {
 	        var _this = this;
 	        this.scope = {
-	            stuckEntity: '=',
-	            onStuckEntityChanged: '='
+	            stuckEntity: '<',
+	            onStuckEntityChanged: '<'
 	        };
 	        this.controller = 'StuckPointsController';
 	        this.controllerAs = '$ctrl';
@@ -384,21 +420,82 @@
 	        this.isShowBin = true;
 	        this.sizes = {
 	            width: 180,
-	            height: 780
+	            height: 780,
+	            verticalMargin: 20,
+	            shaftWidth: 2,
+	            pointRadius: 6.25
 	        };
 	        if (!angular.isDefined(this.onStuckEntityChanged)) {
 	            this.onStuckEntityChanged = new EventEmitter_1.EventEmitter();
 	        }
 	        this.onPointChanged = new EventEmitter_1.EventEmitter();
-	        this.initShaft();
-	        this.initCompression();
+	        this.init();
+	        this.format();
 	    }
 	    StuckPointsController.prototype.onRemove = function ($event) {
+	    };
+	    StuckPointsController.prototype.format = function () {
+	        var _this = this;
+	        this.pointsInstances = [];
+	        angular.forEach(this.stuckEntity.points, function (point) {
+	            _this.pointsInstances.push({
+	                parent: {
+	                    height: _this.sizes.height,
+	                    width: _this.sizes.width
+	                },
+	                element: {
+	                    radius: _this.sizes.pointRadius,
+	                    x: _this.sizes.width / 2 + 1 + _this.sizes.pointRadius * 2 * _this.pointLayer() + (_this.pointLayer() > 0 ? 6 : 0),
+	                    y: _this.pointByValue(point.depth),
+	                    fill: 'white',
+	                    stroke: 'grey',
+	                    strokeWidth: 3,
+	                    icon: 'assets/img/point-section-red-active.png'
+	                },
+	                depth: point.depth
+	            });
+	        });
+	    };
+	    StuckPointsController.prototype.pointLayer = function () {
+	        return 0;
+	    };
+	    StuckPointsController.prototype.pointByValue = function (depth) {
+	        var percent = (depth - this.stuckEntity.minDepth) / (this.stuckEntity.maxDepth - this.stuckEntity.minDepth);
+	        var height = this.calculateHeight() * percent;
+	        var margined = height + this.sizes.verticalMargin;
+	        return margined;
+	    };
+	    StuckPointsController.prototype.valueByPoint = function (point) {
+	        var unmargined = point - this.sizes.verticalMargin;
+	        var percent = unmargined / this.calculateHeight();
+	        var value = percent * (this.stuckEntity.maxDepth - this.stuckEntity.minDepth) + this.stuckEntity.minDepth;
+	        return value;
+	    };
+	    StuckPointsController.prototype.calculateHeight = function () {
+	        return this.sizes.height - this.sizes.verticalMargin * 2;
+	    };
+	    StuckPointsController.prototype.init = function () {
+	        this.initConfig();
+	        this.initShaft();
+	        this.initCompression();
+	    };
+	    StuckPointsController.prototype.initConfig = function () {
+	        this.stuckEntityConfig = {
+	            parent: {
+	                width: this.sizes.width,
+	                height: this.sizes.height
+	            },
+	            point: {
+	                radius: this.sizes.pointRadius
+	            }
+	        };
 	    };
 	    StuckPointsController.prototype.initShaft = function () {
 	        this.shaft = {
 	            parentWidth: this.sizes.width,
-	            parentHeight: this.sizes.height
+	            parentHeight: this.sizes.height,
+	            verticalMargin: this.sizes.verticalMargin,
+	            width: this.sizes.shaftWidth
 	        };
 	    };
 	    StuckPointsController.prototype.initCompression = function () {
@@ -421,8 +518,8 @@
 	var StuckPointPlacement = (function () {
 	    function StuckPointPlacement() {
 	        this.scope = {
-	            pointsEntity: '=',
-	            onPointsEntityChanged: '='
+	            pointsEntity: '<',
+	            onPointsEntityChanged: '<'
 	        };
 	        this.controller = 'StuckPointPlacementController';
 	        this.controllerAs = '$ctrl';

@@ -1,7 +1,7 @@
 export class StuckPoints {
     public scope: any = {
-        stuckEntity: '=',
-        onStuckEntityChanged: '='
+        stuckEntity: '<',
+        onStuckEntityChanged: '<'
     };
 
     public controller: string = 'StuckPointsController';

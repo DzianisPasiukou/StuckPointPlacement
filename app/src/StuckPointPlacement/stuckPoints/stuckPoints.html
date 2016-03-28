@@ -1,20 +1,20 @@
 <div class="stuck-points">
-    <div jar-preloader ng-show="$ctrl.isLocked ">
+    <div jar-preloader ng-show="$ctrl.isLocked">
         Preloading...
     </div>
 
-    <img class="delete-button " ng-show="$ctrl.isShowBin " ng-click="$ctrl.onRemove($event) " src="assets/img/close1.png " />
+    <img class="delete-button" ng-show="$ctrl.isShowBin" ng-click="$ctrl.onRemove($event)" src="assets/img/close1.png" />
 
-    <svg ng-style="$ctrl.compression ">
-        <rect class="field "></rect>
+    <svg ng-style="$ctrl.compression">
+        <rect class="field"></rect>
         
-        <g jar-shaft shaft="$ctrl.shaft "></g>
+        <g jar-shaft shaft="$ctrl.shaft"></g>
         
-        <line class="legend-point-initial "></line>
-        <text class="legend-point-initial-label "></text>
-        <line class="legend-point-finish "></line>
-        <text class="legend-point-finish-label "></text>
+        <line class="legend-point-initial"></line>
+        <text class="legend-point-initial-label"></text>
+        <line class="legend-point-finish"></line>
+        <text class="legend-point-finish-label"></text>
         
-        <g jar-point-instance point="point " on-point-changed="$ctrl.onPointChanged " ng-repeat="point in $ctrl.stuckEntity.points "></g>
+        <g jar-point-instance point="point" on-point-changed="$ctrl.onPointChanged" ng-repeat="point in $ctrl.pointsInstances"></g>
     </svg>
 </div>
