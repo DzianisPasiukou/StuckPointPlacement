@@ -1,13 +1,13 @@
 export class PointInstance {
-    public scope: any = {
+    public scope:any = {
         point: '<',
         onPointChanged: '<'
     };
-    public controller: string = 'PointInstanceController';
-    public controllerAs: string = '$ctrl';
-    public bindToController: boolean = true;
+    public controller:string = 'PointInstanceController';
+    public controllerAs:string = '$ctrl';
+    public bindToController:boolean = true;
 
-    public templateUrl: string = 'src/StuckPointPlacement/stuckPoints/pointInstance/pointInstance.html';
+    public templateUrl:string = 'src/StuckPointPlacement/stuckPoints/pointInstance/pointInstance.html';
 
     public constructor() {
     }

@@ -4,15 +4,15 @@ export interface IApp {
     pointsEntity: any;
     onPointsEntityChanged: EventEmitter<any>;
 
-    onPointsEntitySubscriber(emitter: any): void;
+    onPointsEntitySubscriber(emitter:any): void;
 }
 
 export class AppController implements IApp {
-    public static $inject: string[] = [];
+    public static $inject:string[] = [];
 
-    public pointsEntity: any;
+    public pointsEntity:any;
 
-    public onPointsEntityChanged: EventEmitter<any>;
+    public onPointsEntityChanged:EventEmitter<any>;
 
     public constructor() {
         this.onPointsEntityChanged = new EventEmitter<any>();
@@ -30,10 +30,10 @@ export class AppController implements IApp {
             }]
         }
 
-        this.onPointsEntityChanged.subscribe((emitter: any) => this.onPointsEntitySubscriber(emitter));
+        this.onPointsEntityChanged.subscribe((emitter:any) => this.onPointsEntitySubscriber(emitter));
     }
 
-    public onPointsEntitySubscriber(emitter: any): void {
+    public onPointsEntitySubscriber(emitter:any):void {
         console.log(`emmiter called in app controller...`)
 
         console.log(`points changed...

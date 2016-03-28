@@ -3,18 +3,19 @@
         Preloading...
     </div>
 
-    <img class="delete-button" ng-show="$ctrl.isShowBin" ng-click="$ctrl.onRemove($event)" src="assets/img/close1.png" />
+    <img class="delete-button" ng-show="$ctrl.isShowBin" ng-click="$ctrl.onRemove($event)" src="assets/img/close1.png"/>
 
     <svg ng-style="$ctrl.compression" ng-mouseup="$ctrl.onMouseUp($event)" ng-mousedown="$ctrl.onMouseDown($event)">
         <rect class="field"></rect>
-        
+
         <g jar-shaft shaft="$ctrl.shaft"></g>
-        
+
         <line class="legend-point-initial"></line>
         <text class="legend-point-initial-label"></text>
         <line class="legend-point-finish"></line>
         <text class="legend-point-finish-label"></text>
-        
-        <g jar-point-instance point="point" on-point-changed="$ctrl.onPointChanged" ng-repeat="point in $ctrl.pointsInstances"></g>
+
+        <g jar-point-instance point="point" on-point-changed="$ctrl.onPointChanged"
+           ng-repeat="point in $ctrl.pointsInstances"></g>
     </svg>
 </div>

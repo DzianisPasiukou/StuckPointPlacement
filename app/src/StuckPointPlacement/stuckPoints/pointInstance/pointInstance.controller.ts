@@ -1,19 +1,19 @@
 import {EventEmitter} from './../../../Core/EventEmitter';
 
 export class PointInstanceController {
-    public static $inject: string[] = [];
+    public static $inject:string[] = [];
 
     /**
      * @input point - the any passed to us
      */
-    public point: any;
+    public point:any;
 
     /**
-    * @output onPointChanged - outputs the stuck entity is changed
-    */
-    public onPointChanged: EventEmitter<any>;
+     * @output onPointChanged - outputs the stuck entity is changed
+     */
+    public onPointChanged:EventEmitter<any>;
 
-    public compressions: any;
+    public compressions:any;
 
     public constructor() {
         if (!angular.isDefined(this.onPointChanged)) {
@@ -27,7 +27,7 @@ export class PointInstanceController {
         this.onPointChanged.emit(point);
     }
 
-    public formatDepth(depth: number): string {
+    public formatDepth(depth:number):string {
         return depth.toString();
     }
 

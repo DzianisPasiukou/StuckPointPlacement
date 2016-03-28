@@ -1,24 +1,24 @@
 export class Shaft {
-    public scope: any = {
+    public scope:any = {
         shaft: '<'
     };
-    public controller: string = 'ShaftController';
-    public controllerAs: string = '$ctrl';
-    public bindToController: boolean = true;
+    public controller:string = 'ShaftController';
+    public controllerAs:string = '$ctrl';
+    public bindToController:boolean = true;
 
-    public templateUrl: string = 'src/StuckPointPlacement/stuckPoints/shaft/shaft.html';
+    public templateUrl:string = 'src/StuckPointPlacement/stuckPoints/shaft/shaft.html';
 
-    public link: ng.IDirectiveLinkFn;
+    public link:ng.IDirectiveLinkFn;
 
     public constructor() {
-        this.link = (scope: ng.IScope, element: JQuery, attrs: ng.IAttributes, ctrl: any) => this.linkFn(scope, element, attrs, ctrl);
+        this.link = (scope:ng.IScope, element:JQuery, attrs:ng.IAttributes, ctrl:any) => this.linkFn(scope, element, attrs, ctrl);
     }
 
-    private linkFn(scope: ng.IScope, element: JQuery, attrs: ng.IAttributes, ctrl: any) {
+    private linkFn(scope:ng.IScope, element:JQuery, attrs:ng.IAttributes, ctrl:any) {
         this.init(ctrl);
     }
 
-    private init(ctrl): void {
+    private init(ctrl):void {
         ctrl.compression = {
             width: ctrl.shaft.width,
             height: this.calculateHeight(ctrl),

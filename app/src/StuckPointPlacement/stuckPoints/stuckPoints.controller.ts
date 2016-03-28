@@ -1,27 +1,27 @@
 import {EventEmitter} from './../../Core/EventEmitter';
 
 export class StuckPointsController {
-    public static $inject: string[] = [];
+    public static $inject:string[] = [];
 
     /**
-    * @input stuckEntity - the any passed to us
-    */
-    public stuckEntity: any;
+     * @input stuckEntity - the any passed to us
+     */
+    public stuckEntity:any;
 
     /**
-   * @output onStuckEntityChanged - outputs the stuck entity is changed
-   */
-    public onStuckEntityChanged: EventEmitter<any>;
+     * @output onStuckEntityChanged - outputs the stuck entity is changed
+     */
+    public onStuckEntityChanged:EventEmitter<any>;
 
-    public onPointChanged: EventEmitter<any>;
+    public onPointChanged:EventEmitter<any>;
 
-    public shaft: any;
-    public isLocked: boolean = false;
-    public isShowBin: boolean = true;
-    public compression: any;
-    public pointsInstances: any[];
+    public shaft:any;
+    public isLocked:boolean = false;
+    public isShowBin:boolean = true;
+    public compression:any;
+    public pointsInstances:any[];
 
-    private sizes: any = {
+    private sizes:any = {
         width: 180,
         height: 780,
         verticalMargin: 20,
@@ -40,17 +40,17 @@ export class StuckPointsController {
         this.format();
     }
 
-    public onRemove($event: ng.IAngularEvent): void {
+    public onRemove($event:ng.IAngularEvent):void {
     }
 
-    public onMouseDown($event: MouseEvent): void {
+    public onMouseDown($event:MouseEvent):void {
         console.log('mouse down -> ' + $event);
 
         let value = this.valueByPoint($event.clientY);
         value = this.checkDepth(value);
     }
 
-    public onMouseUp($event: MouseEvent): void {
+    public onMouseUp($event:MouseEvent):void {
         console.log('mouse up -> ' + $event);
     }
 
@@ -75,7 +75,7 @@ export class StuckPointsController {
         });
     }
 
-    private checkDepth(depth: number): depth {
+    private checkDepth(depth:number):number {
         if (depth < this.stuckEntity.minDepth) {
             depth = this.stuckEntity.minDepth;
         }
@@ -86,11 +86,11 @@ export class StuckPointsController {
         return depth;
     }
 
-    private pointLayer(): number {
+    private pointLayer():number {
         return 0;
     }
 
-    private pointByValue(depth: number): number {
+    private pointByValue(depth:number):number {
         const percent = (depth - this.stuckEntity.minDepth) / (this.stuckEntity.maxDepth - this.stuckEntity.minDepth);
         const height = this.calculateHeight() * percent;
         const margined = height + this.sizes.verticalMargin;
@@ -98,7 +98,7 @@ export class StuckPointsController {
         return margined;
     }
 
-    private valueByPoint(point: any): number {
+    private valueByPoint(point:any):number {
         const unmargined = point - this.sizes.verticalMargin;
         const percent = unmargined / this.calculateHeight();
         const value = percent * (this.stuckEntity.maxDepth - this.stuckEntity.minDepth) + this.stuckEntity.minDepth;
@@ -106,16 +106,16 @@ export class StuckPointsController {
         return value;
     }
 
-    private calculateHeight(): number {
+    private calculateHeight():number {
         return this.sizes.height - this.sizes.verticalMargin * 2;
     }
 
-    private init(): void {
+    private init():void {
         this.initShaft();
         this.initCompression();
     }
 
-    private initShaft(): void {
+    private initShaft():void {
         this.shaft = {
             parentWidth: this.sizes.width,
             parentHeight: this.sizes.height,
@@ -124,7 +124,7 @@ export class StuckPointsController {
         };
     }
 
-    private initCompression(): void {
+    private initCompression():void {
         this.compression = {
             width: this.sizes.width,
             height: this.sizes.height
