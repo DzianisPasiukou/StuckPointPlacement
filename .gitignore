@@ -5,3 +5,8 @@ bower_components/
 tmp
 .DS_Store
 .idea
+/.vscode
+/app/app.css
+/app/app.css.map
+/app/bundle.js
+/app/bundle.js.map
