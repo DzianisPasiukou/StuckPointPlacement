@@ -1,12 +1,14 @@
+import {EventEmitter} from './../../../Core/EventEmitter';
+
 interface IPointInstanceController {
     /**
-     * bind to controller
-    */
+     * @input point - the any passed to us
+     */
     point: any;
     /**
-     * bind to controller
-     */
-    onPointChanged(event: { $event: ng.IAngularEvent, point: any });
+    * @output onPointChanged - outputs the stuck entity is changed
+    */
+    onPointChanged: EventEmitter<any>;
 
     onChanged($event, point);
 }
@@ -15,22 +17,22 @@ export class PointInstanceController implements IPointInstanceController {
     public static $inject: string[] = [];
 
     /**
-     * bind to controller
+     * @input point - the any passed to us
      */
     public point: any;
 
+    /**
+    * @output onPointChanged - outputs the stuck entity is changed
+    */
+    public onPointChanged: EventEmitter<any>;
+
     public constructor() {
+        if (!angular.isDefined(this.onPointChanged)) {
+            this.onPointChanged = new EventEmitter<any>();
+        }
     }
 
-    /**
-     * bind to controller
-     */
-    public onPointChanged(event: { $event: ng.IAngularEvent, point: any }) { }
-
     public onChanged($event, point) {
-        this.onPointChanged({
-            $event: $event,
-            point: point
-        })
+        this.onPointChanged.emit(point);
     }
 }

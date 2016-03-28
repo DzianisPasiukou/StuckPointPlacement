@@ -1,6 +1,4 @@
 export class Shaft {
-    public restrict: string = 'AE';
-
     public scope: any = {
         shaft: '='
     };

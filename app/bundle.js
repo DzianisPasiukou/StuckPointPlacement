@@ -77,7 +77,7 @@
 	var AppController = (function () {
 	    function AppController() {
 	        var _this = this;
-	        this.pointsEntityEmitter = new EventEmitter_1.EventEmitter();
+	        this.onPointsEntityChanged = new EventEmitter_1.EventEmitter();
 	        this.pointsEntity = {
 	            maxDepth: 5600,
 	            minDepth: 2550,
@@ -90,9 +90,9 @@
 	                    analysis: {}
 	                }]
 	        };
-	        this.pointsEntityEmitter.subscribe(function (emitter) { return _this.onPointsEntityChanged(emitter); });
+	        this.onPointsEntityChanged.subscribe(function (emitter) { return _this.onPointsEntitySubscriber(emitter); });
 	    }
-	    AppController.prototype.onPointsEntityChanged = function (emitter) {
+	    AppController.prototype.onPointsEntitySubscriber = function (emitter) {
 	        console.log("emmiter called in app controller...");
 	        console.log("points changed...\nneed to do something...\npoints length = " + emitter.points.length);
 	    };
@@ -226,18 +226,15 @@
 	"use strict";
 	var PointInstance = (function () {
 	    function PointInstance() {
-	        this.restrict = 'AE';
 	        this.scope = {
 	            point: '=',
-	            onPointChanged: '&'
+	            onPointChanged: '='
 	        };
 	        this.controller = 'PointInstanceController';
 	        this.controllerAs = '$ctrl';
 	        this.bindToController = true;
 	        this.templateUrl = 'src/StuckPointPlacement/stuckPoints/pointInstance/pointInstance.html';
 	    }
-	    PointInstance.prototype.link = function (scope, element, attrs) {
-	    };
 	    PointInstance.create = function () {
 	        var directive = function () { return new PointInstance(); };
 	        directive.$inject = [];
@@ -250,21 +247,18 @@
 
 /***/ },
 /* 16 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var EventEmitter_1 = __webpack_require__(10);
 	var PointInstanceController = (function () {
 	    function PointInstanceController() {
+	        if (!angular.isDefined(this.onPointChanged)) {
+	            this.onPointChanged = new EventEmitter_1.EventEmitter();
+	        }
 	    }
-	    /**
-	     * bind to controller
-	     */
-	    PointInstanceController.prototype.onPointChanged = function (event) { };
 	    PointInstanceController.prototype.onChanged = function ($event, point) {
-	        this.onPointChanged({
-	            $event: $event,
-	            point: point
-	        });
+	        this.onPointChanged.emit(point);
 	    };
 	    PointInstanceController.$inject = [];
 	    return PointInstanceController;
@@ -294,7 +288,6 @@
 	var Shaft = (function () {
 	    function Shaft() {
 	        var _this = this;
-	        this.restrict = 'AE';
 	        this.scope = {
 	            shaft: '='
 	        };
@@ -354,10 +347,9 @@
 	var StuckPoints = (function () {
 	    function StuckPoints() {
 	        var _this = this;
-	        this.restrict = 'AE';
 	        this.scope = {
 	            stuckEntity: '=',
-	            onStuckEntityChanged: '&'
+	            onStuckEntityChanged: '='
 	        };
 	        this.controller = 'StuckPointsController';
 	        this.controllerAs = '$ctrl';
@@ -382,9 +374,10 @@
 
 /***/ },
 /* 21 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var EventEmitter_1 = __webpack_require__(10);
 	var StuckPointsController = (function () {
 	    function StuckPointsController() {
 	        this.isLocked = false;
@@ -393,26 +386,14 @@
 	            width: 180,
 	            height: 780
 	        };
+	        if (!angular.isDefined(this.onStuckEntityChanged)) {
+	            this.onStuckEntityChanged = new EventEmitter_1.EventEmitter();
+	        }
+	        this.onPointChanged = new EventEmitter_1.EventEmitter();
 	        this.initShaft();
 	        this.initCompression();
 	    }
-	    /**
-	     bind to controller
-	    */
-	    StuckPointsController.prototype.onStuckEntityChanged = function (event) {
-	    };
-	    StuckPointsController.prototype.onChanged = function ($event, stuckEntity) {
-	        console.log("stuck points changed...\ncall callback from parent...");
-	        this.onStuckEntityChanged({
-	            $event: $event,
-	            stuckEntity: stuckEntity
-	        });
-	    };
-	    StuckPointsController.prototype.onPointChanged = function (event) {
-	        console.log("point changed...");
-	    };
 	    StuckPointsController.prototype.onRemove = function ($event) {
-	        console.log('removed ' + $event);
 	    };
 	    StuckPointsController.prototype.initShaft = function () {
 	        this.shaft = {
@@ -439,10 +420,9 @@
 	"use strict";
 	var StuckPointPlacement = (function () {
 	    function StuckPointPlacement() {
-	        this.restrict = 'AE';
 	        this.scope = {
 	            pointsEntity: '=',
-	            pointsEntityEmitter: '=pointsEntityEmitter'
+	            onPointsEntityChanged: '='
 	        };
 	        this.controller = 'StuckPointPlacementController';
 	        this.controllerAs = '$ctrl';
@@ -450,8 +430,6 @@
 	        this.replace = true;
 	        this.templateUrl = 'src/StuckPointPlacement/stuckPointPlacement.html';
 	    }
-	    StuckPointPlacement.prototype.link = function (scope, element, attrs) {
-	    };
 	    StuckPointPlacement.create = function () {
 	        var directive = function () { return new StuckPointPlacement(); };
 	        directive.$inject = [];
@@ -464,16 +442,22 @@
 
 /***/ },
 /* 23 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var EventEmitter_1 = __webpack_require__(10);
 	var StuckPointPlacementController = (function () {
 	    function StuckPointPlacementController() {
+	        var _this = this;
+	        if (!angular.isDefined(this.onPointsEntityChanged)) {
+	            this.onPointsEntityChanged = new EventEmitter_1.EventEmitter();
+	        }
+	        this.onStuckEntityChanged = new EventEmitter_1.EventEmitter();
+	        this.onStuckEntityChanged.subscribe(function (stuckEntity) { return _this.onStuckEntityChangedSubscriber(stuckEntity); });
 	    }
-	    StuckPointPlacementController.prototype.onStuckEntityChanged = function ($event, stuckEntity) {
-	        console.log("stuck points placement...\ncall emmiter");
+	    StuckPointPlacementController.prototype.onStuckEntityChangedSubscriber = function (stuckEntity) {
 	        this.pointsEntity = stuckEntity;
-	        this.pointsEntityEmitter.next(this.pointsEntity);
+	        this.onPointsEntityChanged.next(this.pointsEntity);
 	    };
 	    StuckPointPlacementController.$inject = [];
 	    return StuckPointPlacementController;

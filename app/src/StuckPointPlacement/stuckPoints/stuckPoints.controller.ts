@@ -1,12 +1,14 @@
+import {EventEmitter} from './../../Core/EventEmitter';
+
 interface IStuckPointsController {
     /**
-    bind to controller
+    * @input stuckEntity - the any passed to us
     */
     stuckEntity: any,
     /**
-    bind to controller
+    * @output onStuckEntityChanged - outputs the stuck entity is changed
     */
-    onStuckEntityChanged(event: { $event: ng.IAngularEvent, stuckEntity: any }): void;
+    onStuckEntityChanged: EventEmitter<any>;
 
     isLocked: boolean;
     isShowBin: boolean;
@@ -20,9 +22,16 @@ export class StuckPointsController implements IStuckPointsController {
     public static $inject: string[] = [];
 
     /**
-     bind to controller
+    * @input stuckEntity - the any passed to us
     */
     public stuckEntity: any;
+
+    /**
+   * @output onStuckEntityChanged - outputs the stuck entity is changed
+   */
+    public onStuckEntityChanged: EventEmitter<any>;
+
+    public onPointChanged: EventEmitter<any>;
 
     public shaft: any;
 
@@ -37,32 +46,17 @@ export class StuckPointsController implements IStuckPointsController {
     }
 
     public constructor() {
+        if (!angular.isDefined(this.onStuckEntityChanged)) {
+            this.onStuckEntityChanged = new EventEmitter<any>();
+        }
+
+        this.onPointChanged = new EventEmitter<any>();
+
         this.initShaft();
         this.initCompression();
     }
 
-    /**
-     bind to controller
-    */
-    public onStuckEntityChanged(event: { $event: ng.IAngularEvent, stuckEntity: any }): void {
-    }
-
-    public onChanged($event: ng.IAngularEvent, stuckEntity: any): void {
-        console.log(`stuck points changed...
-call callback from parent...`);
-
-        this.onStuckEntityChanged({
-            $event: $event,
-            stuckEntity: stuckEntity
-        });
-    }
-
-    public onPointChanged(event: { $event: ng.IAngularEvent, point: any }): void {
-        console.log(`point changed...`);
-    }
-
     public onRemove($event: ng.IAngularEvent): void {
-        console.log('removed ' + $event);
     }
 
     private initShaft(): void {

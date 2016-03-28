@@ -2,39 +2,44 @@ import {EventEmitter} from './../Core/EventEmitter';
 
 interface IStuckPointPlacementController {
     /**
-    bind to controller
-    */
+   * @input pointsEntity - the any passed to us
+   */
     pointsEntity: any,
     /**
-    bind to controller
+    * @output onPointsEntityChanged - outputs the stuck entity is changed
     */
-    pointsEntityEmitter: EventEmitter<any>;
+    onPointsEntityChanged: EventEmitter<any>;
 
-    onStuckEntityChanged($event: ng.IAngularEvent, stuckEntity: any): void;
+    onStuckEntityChanged: EventEmitter<any>;
+    onStuckEntityChangedSubscriber(stuckEntity: any): void;
 }
 
 export class StuckPointPlacementController implements IStuckPointPlacementController {
     public static $inject = [];
 
     /**
-    bind to controller
+    * @input pointsEntity - the any passed to us
     */
     public pointsEntity: any;
 
     /**
-     bind to controller
-    */
-    public pointsEntityEmitter: EventEmitter<any>;
+     * @output onPointsEntityChanged - outputs the stuck entity is changed
+     */
+    public onPointsEntityChanged: EventEmitter<any>;
+
+    public onStuckEntityChanged: EventEmitter<any>;
 
     public constructor() {
+        if (!angular.isDefined(this.onPointsEntityChanged)) {
+            this.onPointsEntityChanged = new EventEmitter<any>();
+        }
+
+        this.onStuckEntityChanged = new EventEmitter<any>();
+        this.onStuckEntityChanged.subscribe((stuckEntity: any) => this.onStuckEntityChangedSubscriber(stuckEntity))
     }
 
-    public onStuckEntityChanged($event: ng.IAngularEvent, stuckEntity: any): void {
-        console.log(`stuck points placement...
-call emmiter`)
-
+    public onStuckEntityChangedSubscriber(stuckEntity: any): void {
         this.pointsEntity = stuckEntity;
-
-        this.pointsEntityEmitter.next(this.pointsEntity);
+        this.onPointsEntityChanged.next(this.pointsEntity);
     }
 }

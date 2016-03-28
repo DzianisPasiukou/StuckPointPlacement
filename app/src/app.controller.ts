@@ -2,9 +2,9 @@ import {EventEmitter} from './Core/EventEmitter';
 
 export interface IApp {
     pointsEntity: any;
-    pointsEntityEmitter: EventEmitter<any>;
+    onPointsEntityChanged: EventEmitter<any>;
 
-    onPointsEntityChanged(emitter: any): void;
+    onPointsEntitySubscriber(emitter: any): void;
 }
 
 export class AppController implements IApp {
@@ -12,9 +12,11 @@ export class AppController implements IApp {
 
     public pointsEntity: any;
 
-    public pointsEntityEmitter: EventEmitter<any> = new EventEmitter<any>();
+    public onPointsEntityChanged: EventEmitter<any>;
 
     public constructor() {
+        this.onPointsEntityChanged = new EventEmitter<any>();
+
         this.pointsEntity = {
             maxDepth: 5600,
             minDepth: 2550,
@@ -28,10 +30,10 @@ export class AppController implements IApp {
             }]
         }
 
-        this.pointsEntityEmitter.subscribe((emitter: any) => this.onPointsEntityChanged(emitter));
+        this.onPointsEntityChanged.subscribe((emitter: any) => this.onPointsEntitySubscriber(emitter));
     }
 
-    public onPointsEntityChanged(emitter: any): void {
+    public onPointsEntitySubscriber(emitter: any): void {
         console.log(`emmiter called in app controller...`)
 
         console.log(`points changed...

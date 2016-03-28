@@ -1,9 +1,7 @@
 export class StuckPointPlacement implements ng.IDirective {
-    public restrict: string = 'AE';
-
     public scope: any = {
         pointsEntity: '=',
-        pointsEntityEmitter: '=pointsEntityEmitter'
+        onPointsEntityChanged: '='
     };
     public controller: string = 'StuckPointPlacementController';
     public controllerAs: string = '$ctrl';
@@ -15,10 +13,7 @@ export class StuckPointPlacement implements ng.IDirective {
 
     public constructor() {
     }
-
-    public link(scope: ng.IScope, element: JQuery, attrs: ng.IAttributes) {
-    }
-
+    
     public static create() {
         var directive = () => new StuckPointPlacement();
         directive.$inject = [];

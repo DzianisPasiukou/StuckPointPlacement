@@ -1,10 +1,9 @@
 export class StuckPoints {
-    public restrict: string = 'AE';
-
     public scope: any = {
         stuckEntity: '=',
-        onStuckEntityChanged: '&'
+        onStuckEntityChanged: '='
     };
+
     public controller: string = 'StuckPointsController';
     public controllerAs: string = '$ctrl';
     public bindToController: boolean = true;
