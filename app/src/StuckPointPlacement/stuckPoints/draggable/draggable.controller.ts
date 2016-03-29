@@ -1,7 +1,7 @@
 export class DraggableController {
-    public static $inject: string[] = [];
+    public static $inject: string[] = ['$timeout'];
 
-    public constructor() { }
+    public constructor(private $timeout: ng.ITimeoutService) { }
 
     /**
      * @output onDragStart
@@ -24,18 +24,31 @@ export class DraggableController {
         d3.select('svg')
             .call(d3.behavior.drag()
                 .on('dragstart', function() {
-                    that.onDragStart({
-                        $event: d3.mouse(this)
-                    });
+                    let $event = d3.mouse(this);
+
+                    that.$timeout(() => {
+                        that.onDragStart ? that.onDragStart({
+                            $event: $event
+                        }) : function() { } ();
+                    })
+
                 })
                 .on('drag', function() {
-                    that.onDrag({
-                        $event: d3.mouse(this)
+                    let $event = d3.mouse(this);
+
+                    that.$timeout(() => {
+                        that.onDrag ? that.onDrag({
+                            $event: $event
+                        }) : function() { } ();
                     });
                 })
                 .on('dragend', function() {
-                    that.onDragEnd({
-                        $event: d3.mouse(this)
+                    let $event = d3.mouse(this);
+
+                    that.$timeout(() => {
+                        that.onDragEnd ? that.onDragEnd({
+                            $event: $event
+                        }) : function() { } ();
                     });
                 })
             );

@@ -57,7 +57,12 @@ export class StuckPointsController {
             }
         });
 
-        this.active = this.stuckEntity.points[this.stuckEntity.points.length - 1];
+        if (this.stuckEntity.points.length) {
+            this.active = this.stuckEntity.points[this.stuckEntity.points.length - 1];
+        }
+        else {
+            this.active = null;
+        }
     }
 
     public onDragStart($event: [number, number]) {
@@ -103,7 +108,7 @@ export class StuckPointsController {
             depth: depth,
             state: 0,
             type: 'None',
-            id: 'newPoint'
+            uuid: 'newPoint'
         };
 
         return point;

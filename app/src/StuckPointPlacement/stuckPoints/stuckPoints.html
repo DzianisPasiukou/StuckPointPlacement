@@ -1,7 +1,7 @@
 <div class="stuck-points">
-    <div jar-preloader ng-show="$ctrl.isLocked">
-    </div>
+    <jar-preloader ng-show="$ctrl.isLocked"></jar-preloader>
     <jar-deletion ng-show="$ctrl.isShowBin" ng-click="$ctrl.onRemove($event)"></jar-deletion>
+
     <svg ng-style="$ctrl.compression" jar-draggable jar-dragstart="$ctrl.onDragStart($event)" jar-drag="$ctrl.onDrag($event)">
         <g jar-shaft shaft="$ctrl.shaft"></g>
         <g jar-legend legend="$ctrl.legends.initial"></g>
