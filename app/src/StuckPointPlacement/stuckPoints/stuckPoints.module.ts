@@ -1,3 +1,5 @@
+import './core/core.module';
+
 import './pointInstance/pointInstance.module';
 import './shaft/shaft.module';
 import './draggable/draggable.module';
@@ -11,6 +13,7 @@ import {StuckPointsController} from "./stuckPoints.controller";
 
 angular
     .module(`${StuckPointPlacementConfig.moduleName}.stuckPointPlacement.stuckPoints`, [
+        `${StuckPointPlacementConfig.moduleName}.stuckPointPlacement.stuckPoints.core`,
         `${StuckPointPlacementConfig.moduleName}.stuckPointPlacement.stuckPoints.pointInstance`,
         `${StuckPointPlacementConfig.moduleName}.stuckPointPlacement.stuckPoints.shaft`,
         `${StuckPointPlacementConfig.moduleName}.stuckPoints.draggable`,

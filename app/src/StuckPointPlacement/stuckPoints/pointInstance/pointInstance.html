@@ -1,11 +1,11 @@
-<svg class="point-instance" id="point{{$ctrl.point.uuid}}" ng-mousedown="$ctrl.onMouseDown($event)">
-    <line ng-attr-x1="{{$ctrl.compressions.line.x1}}" ng-attr-x2="{{$ctrl.compressions.line.x2}}"
-          ng-attr-y1="{{$ctrl.compressions.line.y1}}" ng-attr-y2="{{$ctrl.compressions.line.y2}}"></line>
-    <text ng-bind="$ctrl.formatDepth($ctrl.point.depth)" ng-attr-x="{{$ctrl.compressions.text.x}}"
-          ng-attr-y="{{$ctrl.compressions.text.y}}"></text>
-    <circle ng-style="$ctrl.compressions.circle" ng-show="$ctrl.compressions.circle.isVisible"></circle>
-    <image ng-show="$ctrl.compressions.image.isVisible" ng-attr-width="{{$ctrl.compressions.image.width}}"
-           ng-attr-height="{{$ctrl.compressions.image.height}}" ng-attr-x="{{$ctrl.compressions.image.x}}"
-           ng-attr-y="{{$ctrl.compressions.image.y}}" ng-attr-xlink:href="{{$ctrl.compressions.image.link}}"
+<svg class="point-instance" id="point{{$ctrl.point.id}}">
+    <line ng-attr-x1="{{$ctrl.point.line.x1}}" ng-attr-x2="{{$ctrl.point.line.x2}}"
+          ng-attr-y1="{{$ctrl.point.line.y1}}" ng-attr-y2="{{$ctrl.point.line.y2}}"></line>
+    <text ng-bind="$ctrl.formatDepth($ctrl.point.text.value)" ng-attr-x="{{$ctrl.point.text.x}}"
+          ng-attr-y="{{$ctrl.point.text.y}}"></text>
+    <circle ng-style="$ctrl.point.circle" ng-show="$ctrl.point.circle.isVisible"></circle>
+    <image ng-show="$ctrl.point.image.isVisible" ng-attr-width="{{$ctrl.point.image.width}}"
+           ng-attr-height="{{$ctrl.point.image.height}}" ng-attr-x="{{$ctrl.point.image.x}}"
+           ng-attr-y="{{$ctrl.point.image.y}}" ng-attr-xlink:href="{{$ctrl.point.image.link}}"
            xlink:href=""></image>
 </svg>

@@ -61,13 +61,15 @@ export class StuckPointsController {
             this.active = this.stuckEntity.points[this.stuckEntity.points.length - 1];
         }
         else {
-            this.active = null;
+            this.activePoint = null;
         }
     }
 
     public onDragStart($event: [number, number]) {
         let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
+
+
 
         let unvalidated = this.getUnvalidatedPoint();
         if (!unvalidated) {
@@ -82,6 +84,10 @@ export class StuckPointsController {
         let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
         this.updatePoint(this.active, value);
+    }
+
+    private findPoint(y) {
+
     }
 
     private onPointChangedHandler(instance) {
@@ -119,9 +125,7 @@ export class StuckPointsController {
 
         angular.forEach(this.pointsInstances, (instance: any) => {
             if (instance.id === point.uuid) {
-                instance.depth = point.depth;
-                instance.element.y = this.pointByValue(point.depth);
-                instance.pointSubscriber.next(instance);
+                instance = this.createPointInstance(point);
             }
         });
     }
@@ -135,22 +139,55 @@ export class StuckPointsController {
     }
 
     private createPointInstance(point): any {
-        return {
-            parent: {
-                height: this.sizes.height,
-                width: this.sizes.width
+        //temprorary mock
+        const states = [
+            {
+                color: 'rgb(255,255,255)',
+                border: 'rgb(170,170,170)',
+                borderWidth: '3',
+                icon: ''
             },
-            element: {
-                radius: this.sizes.pointRadius,
-                x: this.sizes.width / 2 + 1 + this.sizes.pointRadius * 2 * this.pointLayer() + (this.pointLayer() > 0 ? 6 : 0),
-                y: this.pointByValue(point.depth)
-            },
-            depth: point.depth,
-            state: point.state,
-            isSelected: true,
+            {
+                color: 'rgb(170,170,170)',
+                border: '',
+                borderWidth: '',
+                icon: 'assets/img/point-section-grey-active.png'
+            }
+        ];
+
+        let instance = {
             id: point.uuid,
-            pointSubscriber: new EventEmitter<any>()
+            line: {
+                x1: this.sizes.width / 2,
+                x2: this.sizes.width / 2 - 24,
+                y1: this.pointByValue(point.depth),
+                y2: this.pointByValue(point.depth)
+            },
+            text: {
+                x: this.sizes.width / 2 - 28,
+                y: this.pointByValue(point.depth),
+                value: point.depth
+            },
+            circle: {
+                r: this.sizes.pointRadius * (this.active.uuid === point.uuid ? 2 : 1),
+                cx: this.sizes.width / 2 + 1 + this.sizes.pointRadius * 2 * this.pointLayer() + (this.pointLayer() > 0 ? 6 : 0),
+                cy: this.pointByValue(point.depth),
+                fill: states[point.state].color,
+                stroke: states[point.state].border,
+                strokeWidth: states[point.state].borderWidth,
+                isVisible: !(this.active.uuid === point.uuid) || !states[point.state].icon
+            },
+            image: {
+                x: this.sizes.width / 2 - 11,
+                y: this.pointByValue(point.depth) - 14,
+                width: 25,
+                height: 27,
+                link: states[point.state].icon,
+                isVisible: (this.active.uuid === point.uuid) && states[point.state].icon
+            }
         };
+
+        return instance;
     }
 
     private checkDepth(depth: number): number {
@@ -253,10 +290,6 @@ export class StuckPointsController {
         };
     }
 
-    private notifyInstances(instance) {
-        instance.pointSubscriber.emit(instance);
-    }
-
     public get active() {
         return this.activePoint;
     }
@@ -264,12 +297,10 @@ export class StuckPointsController {
     public set active(value: any) {
         angular.forEach(this.pointsInstances, (instance) => {
             if (instance.id !== value.uuid && instance.isSelected) {
-                instance.isSelected = false;
-                this.notifyInstances(instance);
+                instance = this.createPointInstance(value);
             }
             else if (instance.id === value.uuid && !instance.isSelected) {
-                instance.isSelected = true;
-                this.notifyInstances(instance);
+                instance = this.createPointInstance(value);
             }
         });
 
