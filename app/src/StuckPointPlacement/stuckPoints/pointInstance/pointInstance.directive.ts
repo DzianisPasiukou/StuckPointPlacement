@@ -1,8 +1,7 @@
 export class PointInstance {
     public scope:any = {
         point: '<',
-        onPointChanged: '<',
-        pointSubscriber: '<'
+        onPointChanged: '<'
     };
     public controller:string = 'PointInstanceController';
     public controllerAs:string = '$ctrl';

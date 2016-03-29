@@ -1,4 +1,4 @@
-<svg class="point-instance" id="point{{$ctrl.point.uuid}}">
+<svg class="point-instance" id="point{{$ctrl.point.uuid}}" ng-mousedown="$ctrl.onMouseDown($event)">
     <line ng-attr-x1="{{$ctrl.compressions.line.x1}}" ng-attr-x2="{{$ctrl.compressions.line.x2}}"
           ng-attr-y1="{{$ctrl.compressions.line.y1}}" ng-attr-y2="{{$ctrl.compressions.line.y2}}"></line>
     <text ng-bind="$ctrl.formatDepth($ctrl.point.depth)" ng-attr-x="{{$ctrl.compressions.text.x}}"

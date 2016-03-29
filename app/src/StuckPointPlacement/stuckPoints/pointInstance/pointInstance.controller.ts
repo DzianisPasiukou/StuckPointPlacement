@@ -1,36 +1,30 @@
 import {EventEmitter} from './../../../Core/EventEmitter';
 
 export class PointInstanceController {
-    public static $inject:string[] = [];
+    public static $inject: string[] = ['$timeout'];
 
     /**
      * @input point - the any passed to us
      */
-    public point:any;
-
-    /**
-     * @input pointSubscriber - the any passed to us
-     */
-    public pointSubscriber:EventEmitter<any>;
+    public point: any;
 
     /**
      * @output onPointChanged - outputs the stuck entity is changed
      */
-    public onPointChanged:EventEmitter<any>;
+    public onPointChanged: EventEmitter<any>;
 
-    public compressions:any;
+    public compressions: any;
 
-    public constructor() {
+    public constructor(private $timeout: ng.ITimeoutService) {
         if (!angular.isDefined(this.onPointChanged)) {
             this.onPointChanged = new EventEmitter<any>();
         }
 
-        if (!angular.isDefined(this.pointSubscriber)) {
-            this.pointSubscriber = new EventEmitter<any>();
-        }
-
-        this.pointSubscriber.subscribe((point) => this.init());
-
+        this.point.pointSubscriber.subscribe((point) => {
+            this.$timeout(() => {
+                this.init();
+            });
+        });
         this.init();
     }
 
@@ -38,7 +32,12 @@ export class PointInstanceController {
         this.onPointChanged.emit(point);
     }
 
-    public formatDepth(depth:string):string {
+    public onMouseDown($event: MouseEvent) {
+        this.point.isSelected = true;
+        this.onChanged($event, this.point);
+    }
+
+    public formatDepth(depth: string): string {
         return parseFloat(depth).toFixed(2);
     }
 
@@ -58,7 +57,6 @@ export class PointInstanceController {
                 icon: 'assets/img/point-section-grey-active.png'
             }
         ];
-
         this.compressions = {
             line: {
                 x1: this.point.parent.width / 2,

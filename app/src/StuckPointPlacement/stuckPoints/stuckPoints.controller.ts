@@ -1,30 +1,31 @@
 import {EventEmitter} from './../../Core/EventEmitter';
 
 export class StuckPointsController {
-    public static $inject:string[] = [];
+    public static $inject: string[] = [];
 
     /**
      * @input stuckEntity - the any passed to us
      */
-    public stuckEntity:any;
+    public stuckEntity: any;
 
     /**
      * @output onStuckEntityChanged - outputs the stuck entity is changed
      */
-    public onStuckEntityChanged:EventEmitter<any>;
+    public onStuckEntityChanged: EventEmitter<any>;
 
-    public onPointChanged:EventEmitter<any>;
-    public pointSubscriber:EventEmitter<any>;
+    public onPointChanged: EventEmitter<any>;
 
-    public shaft:any;
-    public isLocked:boolean = false;
-    public isShowBin:boolean = true;
-    public compression:any;
-    public pointsInstances:any[];
+    public shaft: any;
+    public isLocked: boolean = false;
+    public isShowBin: boolean = true;
+    public compression: any;
+    public pointsInstances: any[];
+    public legends: any;
 
-    private activePoint:any;
+    private activePoint: any;
+    private captured: any;
 
-    private sizes:any = {
+    private sizes: any = {
         width: 180,
         height: 780,
         verticalMargin: 20,
@@ -38,22 +39,29 @@ export class StuckPointsController {
         }
 
         this.onPointChanged = new EventEmitter<any>();
-        this.pointSubscriber = new EventEmitter<any>();
+        this.onPointChanged.subscribe((point) => this.onPointChangedHandler(point));
 
-        this.activePoint = this.stuckEntity.points[0];
+        this.active = this.stuckEntity.points[0];
 
         this.init();
         this.format();
     }
 
-    public onRemove($event:ng.IAngularEvent):void {
+    public onRemove(): void {
+        this.stuckEntity.points.splice(this.stuckEntity.points.indexOf(this.active), 1);
+
+        angular.forEach(this.pointsInstances, (instance, index) => {
+            if (instance.id === this.active.uuid) {
+                this.pointsInstances.splice(index, 1);
+                return;
+            }
+        });
+
+        this.active = this.stuckEntity.points[this.stuckEntity.points.length - 1];
     }
 
-    public onMouseUp($event:MouseEvent):void {
-    }
-
-    public onMouseDown($event:MouseEvent):void {
-        let value = this.valueByPoint($event.offsetY);
+    public onDragStart($event: [number, number]) {
+        let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
 
         let unvalidated = this.getUnvalidatedPoint();
@@ -65,36 +73,50 @@ export class StuckPointsController {
         }
     }
 
-    private instatiatePoint(depth):any {
+    public onDrag($event: [number, number]) {
+        let value = this.valueByPoint($event[1]);
+        value = this.checkDepth(value);
+        this.updatePoint(this.active, value);
+    }
+
+    private onPointChangedHandler(instance) {
+        angular.forEach(this.stuckEntity.points, (point) => {
+            if (point.uuid === instance.id) {
+                this.active = point;
+                return;
+            }
+        });
+    }
+
+    private instatiatePoint(depth): any {
         let point = this.createPoint(depth);
         this.stuckEntity.points.push(point);
         this.pointsInstances.push(this.createPointInstance(point));
 
-        this.activePoint = point;
+        this.active = point;
 
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
-    private createPoint(depth):any {
+    private createPoint(depth): any {
         let point = {
             depth: depth,
             state: 0,
             type: 'None',
+            id: 'newPoint'
         };
 
         return point;
     }
 
-    private updatePoint(point, depth):any {
+    private updatePoint(point, depth): any {
         point.depth = depth;
 
-        angular.forEach(this.pointsInstances, (instance:any) => {
+        angular.forEach(this.pointsInstances, (instance: any) => {
             if (instance.id === point.uuid) {
                 instance.depth = point.depth;
                 instance.element.y = this.pointByValue(point.depth);
-                this.pointSubscriber.next(instance);
-
-                return;
+                instance.pointSubscriber.next(instance);
             }
         });
     }
@@ -107,7 +129,7 @@ export class StuckPointsController {
         });
     }
 
-    private createPointInstance(point):any {
+    private createPointInstance(point): any {
         return {
             parent: {
                 height: this.sizes.height,
@@ -121,11 +143,12 @@ export class StuckPointsController {
             depth: point.depth,
             state: point.state,
             isSelected: true,
-            id: point.uuid
+            id: point.uuid,
+            pointSubscriber: new EventEmitter<any>()
         };
     }
 
-    private checkDepth(depth:number):number {
+    private checkDepth(depth: number): number {
         if (depth < this.stuckEntity.minDepth) {
             depth = this.stuckEntity.minDepth;
         }
@@ -148,11 +171,11 @@ export class StuckPointsController {
         return null;
     }
 
-    private pointLayer():number {
+    private pointLayer(): number {
         return 0;
     }
 
-    private pointByValue(depth:number):number {
+    private pointByValue(depth: number): number {
         const percent = (depth - this.stuckEntity.minDepth) / (this.stuckEntity.maxDepth - this.stuckEntity.minDepth);
         const height = this.calculateHeight() * percent;
         const margined = height + this.sizes.verticalMargin;
@@ -160,7 +183,7 @@ export class StuckPointsController {
         return margined;
     }
 
-    private valueByPoint(point:any):number {
+    private valueByPoint(point: any): number {
         const unmargined = point - this.sizes.verticalMargin;
         const percent = unmargined / this.calculateHeight();
         const value = percent * (this.stuckEntity.maxDepth - this.stuckEntity.minDepth) + this.stuckEntity.minDepth;
@@ -168,16 +191,17 @@ export class StuckPointsController {
         return value;
     }
 
-    private calculateHeight():number {
+    private calculateHeight(): number {
         return this.sizes.height - this.sizes.verticalMargin * 2;
     }
 
-    private init():void {
+    private init(): void {
         this.initShaft();
         this.initCompression();
+        this.initLegends();
     }
 
-    private initShaft():void {
+    private initShaft(): void {
         this.shaft = {
             parentWidth: this.sizes.width,
             parentHeight: this.sizes.height,
@@ -186,10 +210,64 @@ export class StuckPointsController {
         };
     }
 
-    private initCompression():void {
+    private initCompression(): void {
         this.compression = {
             width: this.sizes.width,
             height: this.sizes.height
         }
+    }
+
+    private initLegends() {
+        this.legends = {
+            initial: {
+                line: {
+                    x1: this.sizes.width / 2,
+                    x2: this.sizes.width / 2 - 24,
+                    y1: this.sizes.verticalMargin,
+                    y2: this.sizes.verticalMargin
+                },
+                text: {
+                    x: this.sizes.width / 2 - 28,
+                    y: this.sizes.verticalMargin,
+                    value: this.stuckEntity.minDepth
+                }
+            },
+            finish: {
+                line: {
+                    x1: this.sizes.width / 2,
+                    x2: this.sizes.width / 2 - 24,
+                    y1: this.sizes.height - this.sizes.verticalMargin,
+                    y2: this.sizes.height - this.sizes.verticalMargin
+                },
+                text: {
+                    x: this.sizes.width / 2 - 28,
+                    y: this.sizes.height - this.sizes.verticalMargin,
+                    value: this.stuckEntity.maxDepth
+                }
+            }
+        };
+    }
+
+    private notifyInstances(instance) {
+        instance.pointSubscriber.emit(instance);
+    }
+
+    public get active() {
+        return this.activePoint;
+    }
+
+    public set active(value: any) {
+        angular.forEach(this.pointsInstances, (instance) => {
+            if (instance.id !== value.uuid && instance.isSelected) {
+                instance.isSelected = false;
+                this.notifyInstances(instance);
+            }
+            else if (instance.id === value.uuid && !instance.isSelected) {
+                instance.isSelected = true;
+                this.notifyInstances(instance);
+            }
+        });
+
+        this.activePoint = value;
     }
 }
