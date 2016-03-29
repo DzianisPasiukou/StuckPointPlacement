@@ -1,31 +1,34 @@
 import {EventEmitter} from './../../Core/EventEmitter';
+import {IStuckEntity} from "./core/entities/interfaces/IStuckEntity";
+import {IPointInstanceEntity} from "./core/entities/interfaces/IPointInstanceEntity";
+import {IShaftEntity} from "./core/entities/interfaces/IShaftEntity";
+import {IPointEntity} from "./core/entities/interfaces/IPointEntity";
 
 export class StuckPointsController {
-    public static $inject: string[] = [];
+    public static $inject:string[] = [];
 
     /**
      * @input stuckEntity - the any passed to us
      */
-    public stuckEntity: any;
+    public stuckEntity:IStuckEntity;
 
     /**
      * @output onStuckEntityChanged - outputs the stuck entity is changed
      */
-    public onStuckEntityChanged: EventEmitter<any>;
+    public onStuckEntityChanged:EventEmitter<IStuckEntity>;
 
-    public onPointChanged: EventEmitter<any>;
+    public onPointChanged:EventEmitter<any>;
 
-    public shaft: any;
-    public isLocked: boolean = false;
-    public isShowBin: boolean = true;
-    public compression: any;
-    public pointsInstances: any[];
-    public legends: any;
+    public shaft:IShaftEntity;
+    public isLocked:boolean = false;
+    public isShowBin:boolean = true;
+    public compression:any;
+    public pointsInstances:IPointInstanceEntity[];
+    public legends:any;
 
-    private activePoint: any;
-    private captured: any;
+    private activePoint:IPointEntity;
 
-    private sizes: any = {
+    private sizes:any = {
         width: 180,
         height: 780,
         verticalMargin: 20,
@@ -47,7 +50,7 @@ export class StuckPointsController {
         this.format();
     }
 
-    public onRemove(): void {
+    public onRemove():void {
         this.stuckEntity.points.splice(this.stuckEntity.points.indexOf(this.active), 1);
 
         angular.forEach(this.pointsInstances, (instance, index) => {
@@ -65,10 +68,9 @@ export class StuckPointsController {
         }
     }
 
-    public onDragStart($event: [number, number]) {
+    public onDragStart($event:[number, number]) {
         let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
-
 
 
         let unvalidated = this.getUnvalidatedPoint();
@@ -80,14 +82,10 @@ export class StuckPointsController {
         }
     }
 
-    public onDrag($event: [number, number]) {
+    public onDrag($event:[number, number]) {
         let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
         this.updatePoint(this.active, value);
-    }
-
-    private findPoint(y) {
-
     }
 
     private onPointChangedHandler(instance) {
@@ -99,7 +97,7 @@ export class StuckPointsController {
         });
     }
 
-    private instatiatePoint(depth): any {
+    private instatiatePoint(depth):any {
         let point = this.createPoint(depth);
         this.stuckEntity.points.push(point);
         this.pointsInstances.push(this.createPointInstance(point));
@@ -109,7 +107,7 @@ export class StuckPointsController {
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
-    private createPoint(depth): any {
+    private createPoint(depth):any {
         let point = {
             depth: depth,
             state: 0,
@@ -120,10 +118,10 @@ export class StuckPointsController {
         return point;
     }
 
-    private updatePoint(point, depth): any {
+    private updatePoint(point, depth):any {
         point.depth = depth;
 
-        angular.forEach(this.pointsInstances, (instance: any) => {
+        angular.forEach(this.pointsInstances, (instance:any) => {
             if (instance.id === point.uuid) {
                 instance = this.createPointInstance(point);
             }
@@ -138,7 +136,7 @@ export class StuckPointsController {
         });
     }
 
-    private createPointInstance(point): any {
+    private createPointInstance(point):any {
         //temprorary mock
         const states = [
             {
@@ -190,7 +188,7 @@ export class StuckPointsController {
         return instance;
     }
 
-    private checkDepth(depth: number): number {
+    private checkDepth(depth:number):number {
         if (depth < this.stuckEntity.minDepth) {
             depth = this.stuckEntity.minDepth;
         }
@@ -213,11 +211,11 @@ export class StuckPointsController {
         return null;
     }
 
-    private pointLayer(): number {
+    private pointLayer():number {
         return 0;
     }
 
-    private pointByValue(depth: number): number {
+    private pointByValue(depth:number):number {
         const percent = (depth - this.stuckEntity.minDepth) / (this.stuckEntity.maxDepth - this.stuckEntity.minDepth);
         const height = this.calculateHeight() * percent;
         const margined = height + this.sizes.verticalMargin;
@@ -225,7 +223,7 @@ export class StuckPointsController {
         return margined;
     }
 
-    private valueByPoint(point: any): number {
+    private valueByPoint(point:any):number {
         const unmargined = point - this.sizes.verticalMargin;
         const percent = unmargined / this.calculateHeight();
         const value = percent * (this.stuckEntity.maxDepth - this.stuckEntity.minDepth) + this.stuckEntity.minDepth;
@@ -233,17 +231,17 @@ export class StuckPointsController {
         return value;
     }
 
-    private calculateHeight(): number {
+    private calculateHeight():number {
         return this.sizes.height - this.sizes.verticalMargin * 2;
     }
 
-    private init(): void {
+    private init():void {
         this.initShaft();
         this.initCompression();
         this.initLegends();
     }
 
-    private initShaft(): void {
+    private initShaft():void {
         this.shaft = {
             parentWidth: this.sizes.width,
             parentHeight: this.sizes.height,
@@ -252,7 +250,7 @@ export class StuckPointsController {
         };
     }
 
-    private initCompression(): void {
+    private initCompression():void {
         this.compression = {
             width: this.sizes.width,
             height: this.sizes.height
@@ -294,8 +292,8 @@ export class StuckPointsController {
         return this.activePoint;
     }
 
-    public set active(value: any) {
-        angular.forEach(this.pointsInstances, (instance) => {
+    public set active(value:any) {
+        angular.forEach(this.pointsInstances, (instance:any) => {
             if (instance.id !== value.uuid && instance.isSelected) {
                 instance = this.createPointInstance(value);
             }

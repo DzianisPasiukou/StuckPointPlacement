@@ -1,4 +1,5 @@
 import {EventEmitter} from './Core/EventEmitter';
+import {IStuckEntity} from "./StuckPointPlacement/stuckPoints/core/entities/interfaces/IStuckEntity";
 
 export interface IApp {
     pointsEntity: any;
@@ -10,7 +11,7 @@ export interface IApp {
 export class AppController implements IApp {
     public static $inject:string[] = [];
 
-    public pointsEntity:any;
+    public pointsEntity:IStuckEntity;
 
     public onPointsEntityChanged:EventEmitter<any>;
 
@@ -28,7 +29,7 @@ export class AppController implements IApp {
                 isValid: false,
                 analysis: {}
             }]
-        }
+        };
 
         this.onPointsEntityChanged.subscribe((emitter:any) => this.onPointsEntitySubscriber(emitter));
     }
