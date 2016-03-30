@@ -3,9 +3,11 @@ import {IStuckEntity} from "./core/entities/interfaces/IStuckEntity";
 import {IPointInstanceEntity} from "./core/entities/interfaces/IPointInstanceEntity";
 import {IShaftEntity} from "./core/entities/interfaces/IShaftEntity";
 import {IPointEntity} from "./core/entities/interfaces/IPointEntity";
+import {IPointsStructureService} from "./core/structures/pointsStructure.service";
+import {IPointsInstancesService} from "./core/structures/pointsInstances.service";
 
 export class StuckPointsController {
-    public static $inject:string[] = [];
+    public static $inject:string[] = ['pointsStructureService', 'pointsInstancesService'];
 
     /**
      * @input stuckEntity - the any passed to us
@@ -17,14 +19,13 @@ export class StuckPointsController {
      */
     public onStuckEntityChanged:EventEmitter<IStuckEntity>;
 
-    public onPointChanged:EventEmitter<any>;
-
     public shaft:IShaftEntity;
     public isLocked:boolean = false;
     public isShowBin:boolean = true;
     public compression:any;
-    public pointsInstances:IPointInstanceEntity[];
     public legends:any;
+
+    public pointsInstances:IPointInstanceEntity[];
 
     private activePoint:IPointEntity;
 
@@ -36,29 +37,23 @@ export class StuckPointsController {
         pointRadius: 6.25
     };
 
-    public constructor() {
+    public constructor(private pointsStructureService:IPointsStructureService, private pointsInstancesService:IPointsInstancesService) {
         if (!angular.isDefined(this.onStuckEntityChanged)) {
             this.onStuckEntityChanged = new EventEmitter<any>();
         }
-
-        this.onPointChanged = new EventEmitter<any>();
-        this.onPointChanged.subscribe((point) => this.onPointChangedHandler(point));
 
         this.active = this.stuckEntity.points[0];
 
         this.init();
         this.format();
+
+        this.pointsStructureService.instantiate(this.stuckEntity.points);
+        this.pointsInstancesService.instantiate(this.pointsInstances);
     }
 
-    public onRemove():void {
-        this.stuckEntity.points.splice(this.stuckEntity.points.indexOf(this.active), 1);
-
-        angular.forEach(this.pointsInstances, (instance, index) => {
-            if (instance.id === this.active.uuid) {
-                this.pointsInstances.splice(index, 1);
-                return;
-            }
-        });
+    public removePoint():void {
+        this.pointsStructureService.remove(this.active);
+        this.pointsInstancesService.remove(this.active);
 
         if (this.stuckEntity.points.length) {
             this.active = this.stuckEntity.points[this.stuckEntity.points.length - 1];
@@ -72,34 +67,26 @@ export class StuckPointsController {
         let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
 
-
         let unvalidated = this.getUnvalidatedPoint();
         if (!unvalidated) {
             this.instatiatePoint(value);
         }
         else {
-            this.updatePoint(unvalidated, value);
+            unvalidated.depth = value;
+            this.updatePoint(unvalidated);
         }
     }
 
     public onDrag($event:[number, number]) {
         let value = this.valueByPoint($event[1]);
         value = this.checkDepth(value);
-        this.updatePoint(this.active, value);
-    }
 
-    private onPointChangedHandler(instance) {
-        angular.forEach(this.stuckEntity.points, (point) => {
-            if (point.uuid === instance.id) {
-                this.active = point;
-                return;
-            }
-        });
+        this.active.depth = value;
+        this.updatePoint(this.active);
     }
 
     private instatiatePoint(depth):any {
-        let point = this.createPoint(depth);
-        this.stuckEntity.points.push(point);
+        let point = this.pointsStructureService.create(depth);
         this.pointsInstances.push(this.createPointInstance(point));
 
         this.active = point;
@@ -118,14 +105,9 @@ export class StuckPointsController {
         return point;
     }
 
-    private updatePoint(point, depth):any {
-        point.depth = depth;
-
-        angular.forEach(this.pointsInstances, (instance:any) => {
-            if (instance.id === point.uuid) {
-                instance = this.createPointInstance(point);
-            }
-        });
+    private updatePoint(point):any {
+        this.pointsStructureService.update(point);
+        this.pointsInstancesService.update(point);
     }
 
     private format() {

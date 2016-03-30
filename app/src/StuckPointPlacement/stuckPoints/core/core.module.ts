@@ -5,5 +5,5 @@ import {PointsInstancesService} from "./structures/pointsInstances.service";
 
 angular
     .module(`${StuckPointPlacementConfig.moduleName}.stuckPointPlacement.stuckPoints.core`, [])
-    .service('PointsStructureService', PointsStructureService)
-    .service('PointsInstancesService', PointsInstancesService);
+    .service('pointsStructureService', PointsStructureService)
+    .service('pointsInstancesService', PointsInstancesService);
