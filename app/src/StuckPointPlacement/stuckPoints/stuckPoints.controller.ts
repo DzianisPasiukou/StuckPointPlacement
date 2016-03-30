@@ -60,26 +60,13 @@ export class StuckPointsController {
             this.onActivePointChangedHandler(value);
         });
 
-        this.init();
-    }
-
-    public removePoint():void {
-        this.pointsStructureService.remove(this.pointsStructureService.active);
-        this.pointsInstancesService.remove(this.pointsStructureService.active);
-
-        if (this.stuckEntity.points.length) {
-            this.pointsStructureService.active = this.stuckEntity.points[this.stuckEntity.points.length - 1];
-        }
-        else {
-            this.pointsStructureService.active = null;
-        }
-
-        this.onStuckEntityChanged.emit(this.stuckEntity);
+        this.initShaft();
+        this.initCompression();
+        this.initLegends();
     }
 
     public onDragStart($event:[number, number]) {
         let value = this.depthSynchronizerService.valueByPoint($event[1]);
-        value = this.depthSynchronizerService.checkDepth(value);
 
         let unvalidated = this.pointsStructureService.getUnvalidatedPoint();
         if (!unvalidated) {
@@ -128,10 +115,11 @@ export class StuckPointsController {
         this.pointsInstancesService.update(point);
     }
 
-    private init():void {
-        this.initShaft();
-        this.initCompression();
-        this.initLegends();
+    public removePoint():void {
+        this.pointsInstancesService.remove(this.pointsStructureService.active);
+        this.pointsStructureService.remove(this.pointsStructureService.active);
+
+        this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
     private initShaft():void {

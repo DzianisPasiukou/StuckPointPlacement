@@ -45,6 +45,13 @@ export class PointsStructureService implements IPointsStructureService {
 
     public remove(active:IPointEntity) {
         this.points.splice(this.points.indexOf(active), 1);
+
+        if (this.points.length) {
+            this.active = this.points[this.points.length - 1];
+        }
+        else {
+            this.active = null;
+        }
     }
 
     public subscribeOnActiveChanged(observer:(value:IPointEntity) => void) {

@@ -28,9 +28,11 @@ export class DepthSynchronizerService implements IDepthSynchronizerService {
     }
 
     public valueByPoint(point:any):number {
-        const unmargined = point - this._sizes.verticalMargin;
-        const percent = unmargined / this.calculateHeight();
-        const value = percent * (this._maxDepth - this._minDepth) + this._minDepth;
+        let unmargined = point - this._sizes.verticalMargin;
+        let percent = unmargined / this.calculateHeight();
+        let value = percent * (this._maxDepth - this._minDepth) + this._minDepth;
+
+        value = this.checkDepth(value);
 
         return value;
     }
