@@ -7,29 +7,34 @@ import {IPointsStructureService} from "./core/structures/pointsStructure.service
 import {IPointsInstancesService} from "./core/structures/pointsInstances.service";
 
 import {PointInstanceEntity} from './core/entities/PointInstanceEntity';
+import {IDepthSynchronizerService} from "./core/structures/depthSynchronizer.service";
 
 export class StuckPointsController {
-    public static $inject: string[] = ['pointsStructureService', 'pointsInstancesService'];
+    public static $inject:string[] = [
+        'pointsStructureService',
+        'pointsInstancesService',
+        'depthSynchronizerService'
+    ];
 
     /**
      * @input stuckEntity - the any passed to us
      */
-    public stuckEntity: IStuckEntity;
+    public stuckEntity:IStuckEntity;
 
     /**
      * @output onStuckEntityChanged - outputs the stuck entity is changed
      */
-    public onStuckEntityChanged: EventEmitter<IStuckEntity>;
+    public onStuckEntityChanged:EventEmitter<IStuckEntity>;
 
-    public shaft: IShaftEntity;
-    public isLocked: boolean = false;
-    public isShowBin: boolean = true;
-    public compression: any;
-    public legends: any;
+    public shaft:IShaftEntity;
+    public isLocked:boolean = false;
+    public isShowBin:boolean = true;
+    public compression:any;
+    public legends:any;
 
-    public pointsInstances: IPointInstanceEntity[];
+    public pointsInstances:IPointInstanceEntity[];
 
-    private sizes: any = {
+    private sizes:any = {
         width: 180,
         height: 780,
         verticalMargin: 20,
@@ -37,24 +42,28 @@ export class StuckPointsController {
         pointRadius: 6.25
     };
 
-    public constructor(private pointsStructureService: IPointsStructureService, private pointsInstancesService: IPointsInstancesService) {
+    public constructor(private pointsStructureService:IPointsStructureService,
+                       private pointsInstancesService:IPointsInstancesService,
+                       private depthSynchronizerService:IDepthSynchronizerService) {
         if (!angular.isDefined(this.onStuckEntityChanged)) {
             this.onStuckEntityChanged = new EventEmitter<any>();
         }
+
+        this.depthSynchronizerService.register(this.sizes, this.stuckEntity.minDepth, this.stuckEntity.maxDepth);
 
         this.pointsStructureService.instantiate(this.stuckEntity.points);
         angular.forEach(this.stuckEntity.points, (point) => {
             this.createPointInstance(point);
         });
         this.pointsInstances = this.pointsInstancesService.getPointsInstances();
-        this.pointsStructureService.subscribeOnActiveChanged((value: IPointEntity) => {
+        this.pointsStructureService.subscribeOnActiveChanged((value:IPointEntity) => {
             this.onActivePointChangedHandler(value);
         });
 
         this.init();
     }
 
-    public removePoint(): void {
+    public removePoint():void {
         this.pointsStructureService.remove(this.pointsStructureService.active);
         this.pointsInstancesService.remove(this.pointsStructureService.active);
 
@@ -68,11 +77,11 @@ export class StuckPointsController {
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
-    public onDragStart($event: [number, number]) {
-        let value = this.valueByPoint($event[1]);
-        value = this.checkDepth(value);
+    public onDragStart($event:[number, number]) {
+        let value = this.depthSynchronizerService.valueByPoint($event[1]);
+        value = this.depthSynchronizerService.checkDepth(value);
 
-        let unvalidated = this.getUnvalidatedPoint();
+        let unvalidated = this.pointsStructureService.getUnvalidatedPoint();
         if (!unvalidated) {
             this.createPoint(value);
         }
@@ -82,16 +91,16 @@ export class StuckPointsController {
         }
     }
 
-    public onDrag($event: [number, number]) {
-        let value = this.valueByPoint($event[1]);
-        value = this.checkDepth(value);
+    public onDrag($event:[number, number]) {
+        let value = this.depthSynchronizerService.valueByPoint($event[1]);
+        value = this.depthSynchronizerService.checkDepth(value);
 
         this.pointsStructureService.active.depth = value;
         this.updatePoint(this.pointsStructureService.active);
     }
 
-    private onActivePointChangedHandler(value: IPointEntity): void {
-        angular.forEach(this.pointsInstances, (instance: any) => {
+    private onActivePointChangedHandler(value:IPointEntity):void {
+        angular.forEach(this.pointsInstances, (instance:any) => {
             if (instance.id !== value.uuid && instance.isSelected) {
                 instance = this.createPointInstance(value);
             }
@@ -101,7 +110,7 @@ export class StuckPointsController {
         });
     }
 
-    private createPoint(depth): any {
+    private createPoint(depth):any {
         let point = this.pointsStructureService.create(depth);
         this.createPointInstance(point);
 
@@ -110,69 +119,22 @@ export class StuckPointsController {
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
-    private createPointInstance(point: IPointEntity): any {
-        this.pointsInstancesService.create(point, this.sizes, this.pointsStructureService.active, this.pointByValue(point.depth));
+    private createPointInstance(point:IPointEntity):any {
+        this.pointsInstancesService.create(point, this.sizes, this.pointsStructureService.active, this.depthSynchronizerService.pointByValue(point.depth));
     }
 
-    private updatePoint(point): any {
+    private updatePoint(point):any {
         this.pointsStructureService.update(point);
         this.pointsInstancesService.update(point);
     }
 
-    private checkDepth(depth: number): number {
-        if (depth < this.stuckEntity.minDepth) {
-            depth = this.stuckEntity.minDepth;
-        }
-        if (depth > this.stuckEntity.maxDepth) {
-            depth = this.stuckEntity.maxDepth;
-        }
-
-        return depth;
-    }
-
-    private getUnvalidatedPoint() {
-        for (let index = 0; index < this.stuckEntity.points.length; index++) {
-            let item = this.stuckEntity.points[index];
-
-            if (!item.state) {
-                return item;
-            }
-        }
-
-        return null;
-    }
-
-    private pointLayer(): number {
-        return 0;
-    }
-
-    private pointByValue(depth: number): number {
-        const percent = (depth - this.stuckEntity.minDepth) / (this.stuckEntity.maxDepth - this.stuckEntity.minDepth);
-        const height = this.calculateHeight() * percent;
-        const margined = height + this.sizes.verticalMargin;
-
-        return margined;
-    }
-
-    private valueByPoint(point: any): number {
-        const unmargined = point - this.sizes.verticalMargin;
-        const percent = unmargined / this.calculateHeight();
-        const value = percent * (this.stuckEntity.maxDepth - this.stuckEntity.minDepth) + this.stuckEntity.minDepth;
-
-        return value;
-    }
-
-    private calculateHeight(): number {
-        return this.sizes.height - this.sizes.verticalMargin * 2;
-    }
-
-    private init(): void {
+    private init():void {
         this.initShaft();
         this.initCompression();
         this.initLegends();
     }
 
-    private initShaft(): void {
+    private initShaft():void {
         this.shaft = {
             parentWidth: this.sizes.width,
             parentHeight: this.sizes.height,
@@ -181,7 +143,7 @@ export class StuckPointsController {
         };
     }
 
-    private initCompression(): void {
+    private initCompression():void {
         this.compression = {
             width: this.sizes.width,
             height: this.sizes.height
