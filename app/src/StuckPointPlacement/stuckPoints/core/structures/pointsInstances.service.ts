@@ -8,6 +8,7 @@ export interface IPointsInstancesService {
     create(point:IPointEntity, sizes:any, active:IPointEntity, pointByValue:number): IPointInstanceEntity;
     update(point:IPointEntity, sizes:any, active:IPointEntity, pointByValue:number);
     remove(active:IPointEntity);
+    range(y:number) : IPointInstanceEntity;
     getPointsInstances(): IPointInstanceEntity[];
 }
 
@@ -41,6 +42,10 @@ export class PointsInstancesService implements IPointsInstancesService {
                 icon: 'assets/img/point-section-grey-active.png'
             }
         ];
+
+        if (this.isExistPoint(point.uuid)) {
+            return;
+        }
 
         let instance:PointInstanceEntity = new PointInstanceEntity(point.uuid, point.depth, sizes.width, sizes.pointRadius, pointByValue, states[point.state], active.uuid);
 
@@ -81,5 +86,32 @@ export class PointsInstancesService implements IPointsInstancesService {
                 return;
             }
         });
+    }
+
+    public range(y:number):IPointInstanceEntity {
+        let rangePoint;
+
+        angular.forEach(this.pointsInstances, (point:IPointInstanceEntity) => {
+            let circle = point.circle;
+
+            if ((circle.cy + circle.r >= y) && (circle.cy - circle.r <= y )) {
+                rangePoint = point;
+            }
+        });
+
+        return rangePoint;
+    }
+
+    private isExistPoint(id:string):boolean {
+        let isExist = false;
+
+        angular.forEach(this.pointsInstances, (point:IPointInstanceEntity) => {
+            if (point.id === id) {
+                isExist = true;
+                return;
+            }
+        });
+
+        return isExist;
     }
 }

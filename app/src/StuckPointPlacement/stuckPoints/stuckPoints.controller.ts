@@ -69,7 +69,13 @@ export class StuckPointsController {
     public onDragStart($event:[number, number]) {
         let value = this.depthSynchronizerService.valueByPoint($event[1]);
 
+        let rangePoint = this.pointsInstancesService.range($event[1]);
         let unvalidated = this.pointsStructureService.getUnvalidatedPoint();
+
+        if (rangePoint && !angular.equals(rangePoint.id, unvalidated ? unvalidated.uuid : '')) {
+            return;
+        }
+
         if (!unvalidated) {
             this.createPoint(value);
         }
@@ -92,9 +98,8 @@ export class StuckPointsController {
 
     private createPoint(depth):any {
         let point = this.pointsStructureService.create(depth);
-        this.createPointInstance(point);
-
         this.pointsStructureService.active = point;
+        this.createPointInstance(point);
 
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }

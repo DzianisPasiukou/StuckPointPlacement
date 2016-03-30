@@ -83,4 +83,17 @@ export class PointsStructureService implements IPointsStructureService {
         this.activePoint = value;
         this.onActivePointChanged.emit(this.activePoint);
     }
+
+    private isExistPoint(id:string):boolean {
+        let isExist = false;
+
+        angular.forEach(this.points, (point:IPointEntity) => {
+            if (point.uuid === id) {
+                isExist = true;
+                return;
+            }
+        });
+
+        return isExist;
+    }
 }
