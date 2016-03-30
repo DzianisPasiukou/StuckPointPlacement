@@ -45,6 +45,7 @@ export class StuckPointsController {
     public constructor(private pointsStructureService:IPointsStructureService,
                        private pointsInstancesService:IPointsInstancesService,
                        private depthSynchronizerService:IDepthSynchronizerService) {
+
         if (!angular.isDefined(this.onStuckEntityChanged)) {
             this.onStuckEntityChanged = new EventEmitter<any>();
         }
@@ -80,21 +81,13 @@ export class StuckPointsController {
 
     public onDrag($event:[number, number]) {
         let value = this.depthSynchronizerService.valueByPoint($event[1]);
-        value = this.depthSynchronizerService.checkDepth(value);
 
         this.pointsStructureService.active.depth = value;
         this.updatePoint(this.pointsStructureService.active);
     }
 
     private onActivePointChangedHandler(value:IPointEntity):void {
-        angular.forEach(this.pointsInstances, (instance:any) => {
-            if (instance.id !== value.uuid && instance.isSelected) {
-                instance = this.createPointInstance(value);
-            }
-            else if (instance.id === value.uuid && !instance.isSelected) {
-                instance = this.createPointInstance(value);
-            }
-        });
+        this.pointsInstancesService.update(value, this.sizes, value, value ? this.depthSynchronizerService.pointByValue(value.depth) : undefined);
     }
 
     private createPoint(depth):any {
@@ -110,9 +103,9 @@ export class StuckPointsController {
         this.pointsInstancesService.create(point, this.sizes, this.pointsStructureService.active, this.depthSynchronizerService.pointByValue(point.depth));
     }
 
-    private updatePoint(point):any {
+    private updatePoint(point:IPointEntity):any {
         this.pointsStructureService.update(point);
-        this.pointsInstancesService.update(point);
+        this.pointsInstancesService.update(point, this.sizes, this.pointsStructureService.active, this.depthSynchronizerService.pointByValue(point.depth));
     }
 
     public removePoint():void {

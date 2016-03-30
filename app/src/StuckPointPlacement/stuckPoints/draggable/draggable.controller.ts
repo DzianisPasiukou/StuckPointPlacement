@@ -30,8 +30,7 @@ export class DraggableController {
                         that.onDragStart ? that.onDragStart({
                             $event: $event
                         }) : function() { } ();
-                    })
-
+                    });
                 })
                 .on('drag', function() {
                     let $event = d3.mouse(this);
