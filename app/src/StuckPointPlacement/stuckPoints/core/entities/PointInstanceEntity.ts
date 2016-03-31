@@ -5,17 +5,17 @@ import {ICircleEntity} from "./interfaces/ICircleEntity";
 import {IImageEntity} from "./interfaces/IImageEntity";
 
 export class PointInstanceEntity implements IPointInstanceEntity {
-    public id:string;
-    public line:ILineEntity;
-    public text:ITextEntity;
-    public circle:ICircleEntity;
-    public image:IImageEntity;
+    public id: string;
+    public line: ILineEntity;
+    public text: ITextEntity;
+    public circle: ICircleEntity;
+    public image: IImageEntity;
 
-    public constructor(id:string, depth:number, parentWidth:number, radius:number, y:number, state:any, activeId:string) {
+    public constructor(id: string, depth: number, parentWidth: number, radius: number, y: number, state: any, activeId: string) {
         this.init(id, depth, parentWidth, radius, y, state, activeId);
     }
 
-    private init(id:string, depth:number, parentWidth:number, radius:number, y:number, state:any, activeId:string) {
+    private init(id: string, depth: number, parentWidth: number, radius: number, y: number, state: any, activeId: string) {
         this.id = id;
         this.line = {
             x1: parentWidth / 2,
@@ -43,11 +43,11 @@ export class PointInstanceEntity implements IPointInstanceEntity {
             width: 25,
             height: 27,
             link: state.icon,
-            isVisible: (activeId === id) && state.icon
+            isVisible: (activeId === id) && angular.isDefined(state.icon)
         };
     }
 
-    private get layer():number {
+    private get layer(): number {
         return 0;
     }
 }

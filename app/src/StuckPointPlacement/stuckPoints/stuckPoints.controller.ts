@@ -10,31 +10,33 @@ import {PointInstanceEntity} from './core/entities/PointInstanceEntity';
 import {IDepthSynchronizerService} from "./core/structures/depthSynchronizer.service";
 
 export class StuckPointsController {
-    public static $inject:string[] = [
+    public static $inject: string[] = [
         'pointsStructureService',
         'pointsInstancesService',
-        'depthSynchronizerService'
+        'depthSynchronizerService',
+
+        '$timeout'
     ];
 
     /**
      * @input stuckEntity - the any passed to us
      */
-    public stuckEntity:IStuckEntity;
+    public stuckEntity: IStuckEntity;
 
     /**
      * @output onStuckEntityChanged - outputs the stuck entity is changed
      */
-    public onStuckEntityChanged:EventEmitter<IStuckEntity>;
+    public onStuckEntityChanged: EventEmitter<IStuckEntity>;
 
-    public shaft:IShaftEntity;
-    public isLocked:boolean = false;
-    public isShowBin:boolean = true;
-    public compression:any;
-    public legends:any;
+    public shaft: IShaftEntity;
+    public isLocked: boolean = false;
+    public isShowBin: boolean = true;
+    public compression: any;
+    public legends: any;
 
-    public pointsInstances:IPointInstanceEntity[];
+    public pointsInstances: IPointInstanceEntity[];
 
-    private sizes:any = {
+    private sizes: any = {
         width: 180,
         height: 780,
         verticalMargin: 20,
@@ -42,9 +44,10 @@ export class StuckPointsController {
         pointRadius: 6.25
     };
 
-    public constructor(private pointsStructureService:IPointsStructureService,
-                       private pointsInstancesService:IPointsInstancesService,
-                       private depthSynchronizerService:IDepthSynchronizerService) {
+    public constructor(private pointsStructureService: IPointsStructureService,
+        private pointsInstancesService: IPointsInstancesService,
+        private depthSynchronizerService: IDepthSynchronizerService
+        private $timeout: ng.ITimeoutService) {
 
         if (!angular.isDefined(this.onStuckEntityChanged)) {
             this.onStuckEntityChanged = new EventEmitter<any>();
@@ -57,7 +60,7 @@ export class StuckPointsController {
             this.createPointInstance(point);
         });
         this.pointsInstances = this.pointsInstancesService.getPointsInstances();
-        this.pointsStructureService.subscribeOnActiveChanged((value:IPointEntity) => {
+        this.pointsStructureService.subscribeOnActiveChanged((value: IPointEntity) => {
             this.onActivePointChangedHandler(value);
         });
 
@@ -66,13 +69,20 @@ export class StuckPointsController {
         this.initLegends();
     }
 
-    public onDragStart($event:[number, number]) {
+    public onDragStart($event: [number, number]) {
         let value = this.depthSynchronizerService.valueByPoint($event[1]);
 
         let rangePoint = this.pointsInstancesService.range($event[1]);
         let unvalidated = this.pointsStructureService.getUnvalidatedPoint();
 
-        if (rangePoint && !angular.equals(rangePoint.id, unvalidated ? unvalidated.uuid : '')) {
+        if (rangePoint) {
+            let findedPoint = this.pointsStructureService.find(rangePoint.id);
+            findedPoint.depth = value;
+
+            this.updatePoint(findedPoint);
+
+            this.pointsStructureService.active = findedPoint;
+
             return;
         }
 
@@ -82,21 +92,29 @@ export class StuckPointsController {
         else {
             unvalidated.depth = value;
             this.updatePoint(unvalidated);
+
+            this.pointsStructureService.active = unvalidated;
         }
     }
 
-    public onDrag($event:[number, number]) {
+    public onDrag($event: [number, number]) {
         let value = this.depthSynchronizerService.valueByPoint($event[1]);
 
         this.pointsStructureService.active.depth = value;
         this.updatePoint(this.pointsStructureService.active);
     }
 
-    private onActivePointChangedHandler(value:IPointEntity):void {
-        this.pointsInstancesService.update(value, this.sizes, value, value ? this.depthSynchronizerService.pointByValue(value.depth) : undefined);
+    private onActivePointChangedHandler(value: IPointEntity): void {
+        angular.forEach(this.stuckEntity.points, (point) => {
+            this.pointsInstancesService.update(point, this.sizes, value, this.depthSynchronizerService.pointByValue(point.depth));
+        });
+
+        this.$timeout(() => {
+            this.pointsInstances = this.pointsInstancesService.getPointsInstances();
+        });
     }
 
-    private createPoint(depth):any {
+    private createPoint(depth): any {
         let point = this.pointsStructureService.create(depth);
         this.pointsStructureService.active = point;
         this.createPointInstance(point);
@@ -104,23 +122,23 @@ export class StuckPointsController {
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
-    private createPointInstance(point:IPointEntity):any {
+    private createPointInstance(point: IPointEntity): any {
         this.pointsInstancesService.create(point, this.sizes, this.pointsStructureService.active, this.depthSynchronizerService.pointByValue(point.depth));
     }
 
-    private updatePoint(point:IPointEntity):any {
+    private updatePoint(point: IPointEntity): any {
         this.pointsStructureService.update(point);
         this.pointsInstancesService.update(point, this.sizes, this.pointsStructureService.active, this.depthSynchronizerService.pointByValue(point.depth));
     }
 
-    public removePoint():void {
+    public removePoint(): void {
         this.pointsInstancesService.remove(this.pointsStructureService.active);
         this.pointsStructureService.remove(this.pointsStructureService.active);
 
         this.onStuckEntityChanged.emit(this.stuckEntity);
     }
 
-    private initShaft():void {
+    private initShaft(): void {
         this.shaft = {
             parentWidth: this.sizes.width,
             parentHeight: this.sizes.height,
@@ -129,7 +147,7 @@ export class StuckPointsController {
         };
     }
 
-    private initCompression():void {
+    private initCompression(): void {
         this.compression = {
             width: this.sizes.width,
             height: this.sizes.height

@@ -4,29 +4,29 @@ import {IPointEntity} from "../entities/interfaces/IPointEntity";
 import {PointInstanceEntity} from './../entities/PointInstanceEntity';
 
 export interface IPointsInstancesService {
-    instantiate(pointsInstances:IPointInstanceEntity[]);
-    create(point:IPointEntity, sizes:any, active:IPointEntity, pointByValue:number): IPointInstanceEntity;
-    update(point:IPointEntity, sizes:any, active:IPointEntity, pointByValue:number);
-    remove(active:IPointEntity);
-    range(y:number) : IPointInstanceEntity;
+    instantiate(pointsInstances: IPointInstanceEntity[]);
+    create(point: IPointEntity, sizes: any, active: IPointEntity, pointByValue: number): IPointInstanceEntity;
+    update(point: IPointEntity, sizes: any, active: IPointEntity, pointByValue: number);
+    remove(active: IPointEntity);
+    range(y: number): IPointInstanceEntity;
     getPointsInstances(): IPointInstanceEntity[];
 }
 
 export class PointsInstancesService implements IPointsInstancesService {
-    private pointsInstances:IPointInstanceEntity[] = [];
+    private pointsInstances: IPointInstanceEntity[] = [];
 
     public constructor() {
     }
 
-    public instantiate(pointsInstances:IPointInstanceEntity[]) {
+    public instantiate(pointsInstances: IPointInstanceEntity[]) {
         this.pointsInstances = pointsInstances;
     }
 
-    public getPointsInstances():IPointInstanceEntity[] {
+    public getPointsInstances(): IPointInstanceEntity[] {
         return this.pointsInstances;
     }
 
-    public create(point:IPointEntity, sizes:any, active:IPointEntity, pointByValue:number):IPointInstanceEntity {
+    public create(point: IPointEntity, sizes: any, active: IPointEntity, pointByValue: number): IPointInstanceEntity {
         //temprorary mock
         const states = [
             {
@@ -47,14 +47,14 @@ export class PointsInstancesService implements IPointsInstancesService {
             return;
         }
 
-        let instance:PointInstanceEntity = new PointInstanceEntity(point.uuid, point.depth, sizes.width, sizes.pointRadius, pointByValue, states[point.state], active.uuid);
+        let instance: PointInstanceEntity = new PointInstanceEntity(point.uuid, point.depth, sizes.width, sizes.pointRadius, pointByValue, states[point.state], active.uuid);
 
         this.pointsInstances.push(instance);
 
         return instance;
     }
 
-    public update(point:IPointEntity, sizes:any, active:IPointEntity, pointByValue:number) {
+    public update(point: IPointEntity, sizes: any, active: IPointEntity, pointByValue: number) {
         //temprorary mock
         const states = [
             {
@@ -71,15 +71,15 @@ export class PointsInstancesService implements IPointsInstancesService {
             }
         ];
 
-        angular.forEach(this.pointsInstances, (instance:any, index) => {
+        angular.forEach(this.pointsInstances, (instance: any, index) => {
             if (instance.id === point.uuid) {
-                let instance:PointInstanceEntity = new PointInstanceEntity(point.uuid, point.depth, sizes.width, sizes.pointRadius, pointByValue, states[point.state], active.uuid);
+                let instance: PointInstanceEntity = new PointInstanceEntity(point.uuid, point.depth, sizes.width, sizes.pointRadius, pointByValue, states[point.state], active.uuid);
                 this.pointsInstances[index] = instance;
             }
         });
     }
 
-    public remove(active:IPointEntity) {
+    public remove(active: IPointEntity) {
         angular.forEach(this.pointsInstances, (instance, index) => {
             if (instance.id === active.uuid) {
                 this.pointsInstances.splice(index, 1);
@@ -88,13 +88,13 @@ export class PointsInstancesService implements IPointsInstancesService {
         });
     }
 
-    public range(y:number):IPointInstanceEntity {
+    public range(y: number): IPointInstanceEntity {
         let rangePoint;
 
-        angular.forEach(this.pointsInstances, (point:IPointInstanceEntity) => {
+        angular.forEach(this.pointsInstances, (point: IPointInstanceEntity) => {
             let circle = point.circle;
 
-            if ((circle.cy + circle.r >= y) && (circle.cy - circle.r <= y )) {
+            if ((circle.cy + circle.r >= y) && (circle.cy - circle.r <= y)) {
                 rangePoint = point;
             }
         });
@@ -102,10 +102,10 @@ export class PointsInstancesService implements IPointsInstancesService {
         return rangePoint;
     }
 
-    private isExistPoint(id:string):boolean {
+    private isExistPoint(id: string): boolean {
         let isExist = false;
 
-        angular.forEach(this.pointsInstances, (point:IPointInstanceEntity) => {
+        angular.forEach(this.pointsInstances, (point: IPointInstanceEntity) => {
             if (point.id === id) {
                 isExist = true;
                 return;
