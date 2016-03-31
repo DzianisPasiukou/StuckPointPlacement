@@ -46,7 +46,7 @@ export class StuckPointsController {
 
     public constructor(private pointsStructureService: IPointsStructureService,
         private pointsInstancesService: IPointsInstancesService,
-        private depthSynchronizerService: IDepthSynchronizerService
+        private depthSynchronizerService: IDepthSynchronizerService,
         private $timeout: ng.ITimeoutService) {
 
         if (!angular.isDefined(this.onStuckEntityChanged)) {
