@@ -2,10 +2,11 @@ import './app.less';
 
 import {AppController} from './app.controller.ts'
 
-import './StuckPointPlacement/stuckPointPlacement.module'
+import './Jar.Common/PointStates/pointStates.module';
+import './Jar.StuckPointPlacement/stuckPointPlacement.module'
 
 angular
-    .module('myApp', [
-        'myApp.stuckPointPlacement'
+    .module('Jar', [
+        'Jar.StuckPointPlacement'
     ])
     .controller('AppController', AppController);

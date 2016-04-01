@@ -1,5 +1,5 @@
-import {EventEmitter} from './Core/EventEmitter';
-import {IStuckEntity} from "./StuckPointPlacement/stuckPoints/core/entities/interfaces/IStuckEntity";
+import {EventEmitter} from './Jar.Common/Core/EventEmitter';
+import {IStuckEntity} from "./Jar.StuckPointPlacement/stuckPoints/core/entities/interfaces/IStuckEntity";
 
 export interface IApp {
     pointsEntity: any;

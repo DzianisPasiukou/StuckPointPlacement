@@ -1,6 +1,7 @@
 'use strict';
 
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var path = require('path');
 
 module.exports = {
     entry: {
@@ -20,9 +21,9 @@ module.exports = {
     ],
     module: {
         loaders: [{
-                test: /\.ts$/,
-                loader: 'ts'
-            },
+            test: /\.ts$/,
+            loader: 'ts'
+        },
             // Extract css files
             {
                 test: /\.css$/,
@@ -33,7 +34,12 @@ module.exports = {
             {
                 test: /\.less$/,
                 loader: ExtractTextPlugin.extract("style-loader", "css-loader!less-loader")
-            }
+            },
+            {
+                test: /\.html$/,
+                loader: 'ngtemplate!html'
+            },
+            { test: /\.png$/, loader: "url-loader?mimetype=image/png" }
             // You could also use other loaders the same way. I. e. the autoprefixer-loader
         ]
     }
